@@ -362,8 +362,10 @@ var TablePage = function($el, data) {
     this.hasInit = false;
 
     this.showSearch = true;
-    this.hasOrder = true;
+    this.allowSort = true;
     this.hasCheckbox = true;
+
+    this.sortDir = 'asc';
 
     this.updateCallback = null;
 
@@ -556,6 +558,7 @@ TablePage.prototype = TablePage.fn = {
                 }
                 that.goPage(that.btn.currentIndex);
             });
+
             this.btn.insertArea.on('keypress', 'input', function(e) {
                 if (e.keyCode == '13') {
                     e.preventDefault();
@@ -565,6 +568,7 @@ TablePage.prototype = TablePage.fn = {
                     that.goPage(this.value);
                 }
             });
+
             this.btn.insertArea.on('click', 'button', function() {
                 var ele = that.btn.insertArea.find('input[type=text]')[0];
                 ele.value = ~~ele.value;
@@ -584,14 +588,23 @@ TablePage.prototype = TablePage.fn = {
                 that.data = DataHandler.where(that.originData, attr);
                 that.update();
             }
-            
-            this.search.insertArea.on('keypress', 'input', function(e) {
+
+            this.showSearch && this.search.insertArea.on('keypress', 'input', function(e) {
                 if (e.keyCode == '13') {
                     e.preventDefault();
                     searchData();
                 }
             });
-            this.search.insertArea.on('click', 'button', searchData);
+            this.showSearch && this.search.insertArea.on('click', 'button', searchData);
+
+            this.allowSort && this.$el.on('click', 'th[sort-rule]', function() {
+                $(this).parent().find('[class^=sort-]').removeClass('sort-desc').removeClass('sort-asc');
+                $(this).addClass('sort-' + that.sortDir);
+                that.data = DataHandler.sortObj(that.data, $(this).attr('sort-rule'), that.sortDir);
+                that.html.tHead = that.$el.find('thead')[0].outerHTML;
+                that.update();
+                that.sortDir = that.sortDir == 'asc' ? 'desc' : 'asc';
+            });
         },
         /**
          * 显示或隐藏按钮
@@ -673,7 +686,8 @@ TablePage.prototype = TablePage.fn = {
         }
     },
     render: function() {
-        this.$el.parent().children('table:first').html(this.html.table + this.html.tHead + this.html.tBody + '</table>');//再次查找table防止元素失效
+       // this.$el.parent().children('table:first').html(this.html.table + this.html.tHead + this.html.tBody + '</table>');//再次查找table防止元素失效
+       this.$el.html(this.html.table + this.html.tHead + this.html.tBody + '</table>');
     },
     goPage: function(pageIndex) {
         if (this.showStyle == 1) {
