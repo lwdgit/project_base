@@ -2,7 +2,7 @@
 
 var Debug = {
     enable: true,
-    sendError: true,
+    sendError: false,
     _sendError: function(data) {
         if (!Debug.sendError) return;
         var msg = [
@@ -73,7 +73,7 @@ var Debug = {
     },
     _getInfo: function() {
         var err = Debug._getError();
-        if (typeof err.lineNumber == "undefined") {
+        if (typeof err.lineNumber == 'undefined') {
             if (err.stack) { //chrome
                 var line = err.stack.match(/Debug\.log.*\n *(.*)/);
                 if (line !== null) {
@@ -81,10 +81,11 @@ var Debug = {
                 }
                 return line || err.stack.match(/at ((http|file).*)/)[1];
             } else {
-                return "";
+                return '';
             }
         } else {
-            return err.stack.match(/Debug<\/<\.log.*\n(.*)/)[1];
+            return '';
+            //return err.stack === null ? null : err.stack.toString().match(/Debug<\/<\.log.*\n(.*)/)[1];
         }
     },
     log: function(msg) {
@@ -286,88 +287,187 @@ $.GetSetData = {
 
 var DataHandler = {
 
-  sortObj: function(arr, attr, dir) {//asc升序，desc降序
-    if (Object.prototype.toString.call(arr) === '[object Array]' && attr in arr[0]) {
-      dir = dir === 'desc' ? -1 : 1;
-      return arr.sort(function(a, b) {
-        return a[attr] > b[attr] ? dir : -dir;
-      });
+    sortObj: function(arr, attr, dir) { //asc升序，desc降序
+        if (Object.prototype.toString.call(arr) === '[object Array]' && attr in arr[0]) {
+            dir = dir === 'desc' ? -1 : 1;
+            return arr.sort(function(a, b) {
+                return a[attr] > b[attr] ? dir : -dir;
+            });
+        }
+        return arr;
+    },
+    keys: function(obj) {
+        var keys = [];
+        for (var key in obj) keys.push(key);
+        return keys;
+    },
+    isMatch: function(object, attrs) {
+        if (typeof attrs === 'object') {
+            var keys = this.keys(attrs),
+                length = keys.length;
+            if (object == null) return !length;
+            for (var i = 0; i < length; i++) {
+                var key = keys[i];
+                if (object[key] === null || object[key] === undefined || object[key].toString().indexOf(attrs[key]) === -1 || !(key in object)) return false;
+            }
+            return true;
+        } else {
+            for (var key in object) {
+                if (object[key] !== null && object[key] !== undefined && object[key].toString().indexOf(attrs) > -1 && key in object) return true;
+            }
+            return false;
+        }
+    },
+    matcher: function(attrs) {
+        return function(obj) {
+            return this.isMatch(obj, attrs);
+        };
+    },
+    filter: function(obj, predicate, returnAttrArr) {
+        var ret = [];
+        if (returnAttrArr && Array === returnAttrArr.constructor) {
+            for (var prop in obj) {
+                if (predicate.call(this, obj[prop])) {
+                    if (returnAttrs.length === 1) {
+                        ret.push(obj[prop][returnAttrArr[0]]);
+                    } else {
+                        var nObj = {};
+                        for (var property = 0, len = returnAttrs.length; property < len; property++) {
+                            nObj[returnAttrs[property]] = obj[prop][returnAttrArr[property]];
+                        }
+                        ret.push(nObj);
+                    }
+                }
+            }
+        } else {
+            for (var prop in obj)
+                if (predicate.call(this, obj[prop])) ret.push(obj[prop]);
+        }
+
+        return ret;
+    },
+    isEmptyObject: function(obj) {
+        var predicate = false;
+        if (!obj || Object.prototype.toString.call(obj) !== '[object Object]') return false; //不是一个对象时返回false
+        for (var name in obj) {
+            if (obj[name] !== undefined && obj[name] !== null && obj[name].toString().replace(/\s+/g, '') !== '') {
+                return false;
+            }
+        }
+        return true;
+    },
+    where: function(objArr, attrs, returnAttrArr) {
+        if (this.isEmptyObject(attrs)) {
+            var ret = [];
+            if (returnAttrArr && Array === returnAttrArr.constructor) {
+
+                if (returnAttrs.length === 1) {
+                    for (var index = 0, l = objArr.length; i < l; i++) {
+                        ret.push(objArr[index][returnAttrArr[0]]);
+                    }
+                } else {
+                    for (var index = 0, l = objArr.length; i < l; i++) {
+                        var nObj = {};
+                        for (var property = 0, len = returnAttrs.length; property < len; property++) {
+                            nObj[returnAttrs[property]] = objArr[index][returnAttrArr[property]];
+                        }
+                        ret.push(nObj);
+                    }
+                }
+            } else {
+                ret = objArr;
+            }
+            return ret;
+        }
+        return this.filter(objArr, this.matcher(attrs), returnAttrArr);
     }
-    return arr;
-  },
-  keys: function(obj) {
-      var keys = [];
-      for (var key in obj) keys.push(key);
-      return keys;
-  },
-  isMatch: function(object, attrs) {
-    if (typeof attrs === 'object') {
-      var keys = this.keys(attrs), length = keys.length;
-       if (object == null) return !length;
-       for (var i = 0; i < length; i++) {
-         var key = keys[i];
-         if (object[key] === null || object[key] === undefined || object[key].toString().indexOf(attrs[key]) === -1 || !(key in object)) return false;
-       }
-       return true;
-     } else {
-      for(var key in object) {
-        if (object[key] !== null && object[key] !== undefined && object[key].toString().indexOf(attrs) > -1 && key in object) return true;
-      }
-      return false;
-     }
-  },
-  matcher: function(attrs) {
-    return function(obj) {
-      return this.isMatch(obj, attrs);
-    };
-  },
-  filter: function(obj, predicate) {
-      var ret = [];
-      for(var prop in obj) {
-        if (predicate.call(this, obj[prop])) ret.push(obj[prop]);
-      }
-      return ret;
-  },
-  isEmptyObject: function(obj) {
-    var predicate = false;
-    if (!obj || Object.prototype.toString.call(obj) !== '[object Object]') return false;//不是一个对象时返回false
-    for (var name in obj) {
-      if (obj[name] !== undefined && obj[name] !== null && obj[name].toString().replace(/\s+/g, '') !== '') return false;
-    }
-    return true;
-  },
-  where: function(obj, attrs) {
-     if (this.isEmptyObject(attrs))return obj;
-     return this.filter(obj, this.matcher(attrs));
-  }
 }
+
+
+
+
+/**
+ * @param {JQOERY DOM} [$container] [表格容器]
+ * @return {{getSelectedItems, init}} [返回对象]
+ */
+
+/* global -TableSelectEvent */
+var TableSelectEvent = function($container) {
+    var hasInit = false;
+
+    function setTableListChecked(state) {
+        $container.find('tbody input:enabled').prop('checked', state);
+    }
+
+    return {
+        getSelectedItems: function($ele) {
+            return $container.find('tbody input').map(function() {
+                return this.checked ? ~~$(this).attr('tindex') : null;
+            }).get();
+        },
+        init: function() {
+            if (!hasInit) {
+                $container.on('click', 'input', function() {
+                    if (this.parentNode.tagName.toLocaleLowerCase() === 'th') {
+                        setTableListChecked(this.checked);
+                    } else {
+                        if (!this.checked) {
+                            $container.find('thead input').prop('checked', false);
+                        }
+                    }
+                });
+            }
+            hasInit = true;
+            return this;
+        }
+    };
+}
+
+
 
 
 /**
  * table opt
  */
 
-var TablePage = function($el, data) {
+var TablePage = function($el, data, config) {
     this.$el = $el;
 
-    this.currentIndex = 0;
-    this.perNum = 10; //list length per page
-    this.pageNum = 1; //total page
-    this.showStyle = 1; //0: 部分数据 1:全部数据
-
-
     this.originData = this.pageData = this.data = data;
-    this.dataCols = 0;
-    this.tHead = [];
+
+
+
+
+    config = config || {};
+
+    this.tHead = config.tHead || []; //表头文字
+    this.tHeadOrder = config.tHeadOrder || []; //表头排序索引，也可以通过读取col-name字段获取
+
+    this.perNum = config.perNum || 10; //list length per page
+    this.pageNum = config.pageNum || 1; //total page
+    this.showStyle = config.showStyle === 0 ? 0 : 1; //0: 部分数据 1:全部数据
+
+
+
+    this.showSearch = typeof config.showSearch === 'boolean' ? config.showSearch : true;
+    this.allowSort = typeof config.allowSort === 'boolean' ? config.allowSort : true;
+    this.hasCheckbox = typeof config.hasCheckbox === 'boolean' ? config.hasCheckbox : true;
+    this.hasOrder = typeof config.hasOrder === 'boolean' ? config.hasOrder : true;
+
+    this.sortDir = config.sortDir || 'asc';
+
+
+    this.updateCallback = config.updateCallback || function() {
+        Debug.log('please set the function to set update data!')
+    };
+
+    this.sortName = '';
+
+    //以下数据无需设置
+    this.dataCols = 0; //表格列数
     this.hasInit = false;
-
-    this.showSearch = true;
-    this.allowSort = true;
-    this.hasCheckbox = true;
-
-    this.sortDir = 'asc';
-
-    this.updateCallback = null;
+    this.currentIndex = 0;
+    this.searchKeyWord = '';
 
     this.btn = {
         currentIndex: 1, //start from 1
@@ -379,13 +479,7 @@ var TablePage = function($el, data) {
     };
 
     this.search = {
-        cols: [{
-            key: 'mac',
-            name: 'MAC地址'
-        }, {
-            key: 'ip',
-            name: 'IP地址'
-        }],
+        cols: [],
         insertArea: $('#search'),
         searchWrap: '<div class="input-append"><select name="search-key"></select><input class="input-xmedium search-box" type="text" maxlength="32"><button type="button" class="btn btn-default">搜索</button></div>'
     };
@@ -405,39 +499,27 @@ var TablePage = function($el, data) {
 TablePage.prototype = TablePage.fn = {
     constructor: TablePage,
     init: function() {
+        var that = this;
         if (this.$el === null || !this.$el.length) {
             throw new Error('please specify the element for table');
         }
         this.tableOpt.initTableContainer.call(this);
 
         if (!this.hasInit) {
-            var rdNum = ~~(Math.random() * 1000);
+            this._rdNum = ~~(Math.random() * 1000);
             if (!this.btn.insertArea.length && !this.$el.siblings('.table-page-navbtn').length) {
-                var id = 'tablePageBtn_' + rdNum;
+                var id = 'tablePageBtn_' + this._rdNum;
                 this.$el.after('<div class="table-page-navbtn" id="' + id + '"></div>');
                 this.btn.insertArea = $('#' + id);
             }
-            if (this.showSearch === true) {
-                if (!this.search.insertArea.length && !this.$el.siblings('.table-search-area').length) {
-                    var id = 'tableSearchBtn_' + rdNum;
-                    this.$el.before('<div class="table-search-area" id="' + id + '"></div>');
-                    this.search.insertArea = $('#' + id);
-                }
-                this.search.insertArea.html(this.search.searchWrap);
-                if (this.search.cols.length) {
-                    var options = '';
-                    for(var i = 0, l = this.search.cols.length; i < l; i++) {
-                        options += '<option value="'+ this.search.cols[i].key +'">' + this.search.cols[i].name + '</option>';
-                    }
-                    this.search.insertArea.find('select').html(options);
-                } else {
-                    this.search.insertArea.find('select').remove();
-                }
-            }
+
             this.btnOpt.bindEvent.call(this);
         }
 
         this.update();
+
+        this.searchOpt.init.call(this);
+
         this.hasInit = true;
         return this;
     },
@@ -451,10 +533,10 @@ TablePage.prototype = TablePage.fn = {
                 }
             } else {
                 if (this.data && this.data instanceof Array) {
-					if (this.currentIndex >= this.data.length) {
-						this.currentIndex -= this.perNum;
-						this.btn.currentIndex -= 1;
-					}
+                    if (this.currentIndex >= this.data.length) {
+                        this.currentIndex -= this.perNum;
+                        this.btn.currentIndex -= 1;
+                    }
                     this.pageData = this.data.slice(this.currentIndex, this.currentIndex + this.perNum);
                 } else {
                     this.data = this.pageData = [];
@@ -463,19 +545,22 @@ TablePage.prototype = TablePage.fn = {
             return this.pageData;
         },
         updateData: function(data) {
-            this.data = data;
+            this.originData = this.data = data;
         }
     },
     update: function(callback) {
+        this.originData = this.data;
+        this._update();
+        if (callback && typeof callback == 'function') {
+            callback.call(this);
+        }
+    },
+    _update: function() {
         this.dataOpt.getData.call(this);
         if (this.showStyle == 1) {
             this.pageNum = Math.ceil(this.data.length / this.perNum);
         }
         this.goPage(this.btn.currentIndex ? this.btn.currentIndex : 1);
-
-        if (callback && typeof callback == 'function') {
-            callback.call(this);
-        }
     },
     tableOpt: {
         initTableContainer: function() {
@@ -488,10 +573,21 @@ TablePage.prototype = TablePage.fn = {
                 for (var i = 0, l = this.pageData.length; i < l; i++) {
                     this.html.tBody += '<tr>';
                     if (this.pageData[i] instanceof Array || typeof this.pageData[i] == 'object') {
-                        for (var j in this.pageData[i]) {
-                            if (this.pageData[i][j] === undefined) this.pageData[i][j] = '';
-                            this.html.tBody += '<td>' + this.pageData[i][j] + '</td>';
+                        if (this.hasCheckbox) this.html.tBody += '<td><input type="checkbox" tindex="' + (i + this.currentIndex) + '"/></td>';
+                        if (this.hasOrder) this.html.tBody += '<td>' + (i + this.currentIndex + 1) + '</td>';
+                        if (!!this.tHeadOrder.length) {
+                            for (var j = 0, len = this.tHeadOrder.length; j < len; j++) {
+                                var thName = this.tHeadOrder[j];
+                                if (this.pageData[i][thName] === undefined) this.pageData[i][thName] = '';
+                                this.html.tBody += '<td>' + this.pageData[i][thName] + '</td>';
+                            }
+                        } else {
+                            for (var j in this.pageData[i]) {
+                                if (this.pageData[i][j] === undefined) this.pageData[i][j] = '';
+                                this.html.tBody += '<td>' + this.pageData[i][j] + '</td>';
+                            }
                         }
+
                     }
 
                     this.html.tBody += '</tr>';
@@ -501,8 +597,29 @@ TablePage.prototype = TablePage.fn = {
             }
             this.html.tBody += '</tbody>';
         },
+        parseHead: function(tHead) {
+            var ths = tHead.find('tr>*');
+            var that = this;
+            var theadName = null;
+            this.dataCols = ths.length;
+            that.search.cols = ths.map(function() {
+                that.tHead.push(this.innerHTML);
+
+                if (theadName = $(this).attr('col-name')) {
+                    that.tHeadOrder.push(theadName);
+                }
+                var searchName = $(this).attr('search-name');
+
+                if (searchName)
+                    return {
+                        key: searchName,
+                        name: this.innerHTML
+                    };
+            }).get();
+        },
         createHead: function(force) {
             if (!force) {
+                var thead;
                 if (this.html.tHead) {
                     return;
                 } else if (this.tHead.length) {
@@ -512,9 +629,10 @@ TablePage.prototype = TablePage.fn = {
                     }
                     this.html.tHead += '</tr></thead>';
                     this.dataCols = this.tHead.length;
-                } else if (!!this.$el.find('thead').length) {
-                    this.html.tHead = this.$el.find('thead')[0].outerHTML;
-                    this.dataCols = this.$el.find('thead tr>*').length;
+                } else if (!!(thead = this.$el.find('thead')).length) {
+
+                    this.tableOpt.parseHead.call(this, thead);
+                    this.html.tHead = thead[0].outerHTML;
 
                 } else {
                     throw new Error('no table head data and not find thead elements');
@@ -545,6 +663,51 @@ TablePage.prototype = TablePage.fn = {
             this.render();
         }
     },
+    searchOpt: {
+        init: function() {
+            if (this.hasInit) return;
+            var that = this;
+            if (this.showSearch === true) {
+                if (!this.search.insertArea.length && !this.$el.siblings('.table-search-area').length) {
+                    var id = 'tableSearchBtn_' + this._rdNum;
+                    this.$el.before('<div class="table-search-area" id="' + id + '"></div>');
+                    this.search.insertArea = $('#' + id);
+                }
+                this.search.insertArea.html(this.search.searchWrap);
+                if (this.search.cols.length) {
+                    var options = '';
+                    for (var i = 0, l = this.search.cols.length; i < l; i++) {
+                        options += '<option value="' + this.search.cols[i].key + '">' + this.search.cols[i].name + '</option>';
+                    }
+                    this.search.insertArea.find('select').html(options);
+                } else {
+                    this.search.insertArea.find('select').remove();
+                }
+
+                function searchData() {
+                    var val = that.search.insertArea.find('input[type=text]').val(),
+                        type = that.search.insertArea.find('select').val(),
+                        attr = {};
+                    if (type) {
+                        attr[type] = val;
+                    } else {
+                        attr = val;
+                    }
+                    that.searchKeyWord = val;
+                    that.data = DataHandler.where(that.originData, attr);
+                    that._update();
+                }
+
+                this.search.insertArea.on('keypress', 'input', function(e) {
+                    if (e.keyCode == '13') {
+                        e.preventDefault();
+                        searchData();
+                    }
+                });
+                this.search.insertArea.on('click', 'button', searchData);
+            }
+        }
+    },
     btnOpt: {
         bindEvent: function() {
             var that = this;
@@ -558,7 +721,6 @@ TablePage.prototype = TablePage.fn = {
                 }
                 that.goPage(that.btn.currentIndex);
             });
-
             this.btn.insertArea.on('keypress', 'input', function(e) {
                 if (e.keyCode == '13') {
                     e.preventDefault();
@@ -577,33 +739,21 @@ TablePage.prototype = TablePage.fn = {
                 that.goPage(ele.value);
             });
 
-            function searchData() {
-                var val = that.search.insertArea.find('input[type=text]').val(),
-                type = that.search.insertArea.find('select').val(),attr = {};
-                if (type) {
-                    attr[type] = val;
-                } else {
-                    attr = val;
-                }
-                that.data = DataHandler.where(that.originData, attr);
-                that.update();
-            }
 
-            this.showSearch && this.search.insertArea.on('keypress', 'input', function(e) {
-                if (e.keyCode == '13') {
-                    e.preventDefault();
-                    searchData();
-                }
-            });
-            this.showSearch && this.search.insertArea.on('click', 'button', searchData);
+            this.allowSort && this.$el.on('click', 'th[sort-name]', function() {
+                $(this).parent().children().filter('.sort-desc, .sort-asc').attr('class', '');
 
-            this.allowSort && this.$el.on('click', 'th[sort-rule]', function() {
-                $(this).parent().find('[class^=sort-]').removeClass('sort-desc').removeClass('sort-asc');
+
+                var sortName = $(this).attr('sort-name');
+                that.sortDir = that.sortName == sortName ? that.sortDir == 'asc' ? 'desc' : 'asc' : that.sortDir;
+                that.sortName = sortName;
+
                 $(this).addClass('sort-' + that.sortDir);
-                that.data = DataHandler.sortObj(that.data, $(this).attr('sort-rule'), that.sortDir);
+
+                that.data = DataHandler.sortObj(that.data, that.sortName, that.sortDir);
                 that.html.tHead = that.$el.find('thead')[0].outerHTML;
-                that.update();
-                that.sortDir = that.sortDir == 'asc' ? 'desc' : 'asc';
+                that._update();
+
             });
         },
         /**
@@ -611,9 +761,9 @@ TablePage.prototype = TablePage.fn = {
          * @param  {[bool]} visible [true为显示，false为隐藏]
          * @return {[type]}         [description]
          */
-        showBtn: function(visible) {
+        showBtn: function(visible, forceShow) {
             if (visible === true) {
-                if (this.pageNum < 2 || !this.pageData.length) {
+                if (this.pageNum < 2 && forceShow !== true || !this.pageData.length) {
                     this.btn.insertArea.hide();
                 } else {
                     this.btn.insertArea.show();
@@ -634,49 +784,54 @@ TablePage.prototype = TablePage.fn = {
                 btnFirst = '',
                 btnLast = '';
 
-            if (this.pageNum < this.btn.maxIndex) {
-                min = 2;
-                max = this.pageNum > min ? this.pageNum - 1 : min;
-            } else {
-                var area = Math.ceil(this.btn.maxIndex - 3) / 2;
-                max = +this.btn.currentIndex + area >= this.pageNum - 1 ? this.pageNum - 1 : +this.btn.currentIndex + area;
-                min = +this.btn.currentIndex - area <= 2 ? 2 : +this.btn.currentIndex - area;
+            if (+this.pageNum !== 1) {
+                if (this.pageNum < this.btn.maxIndex) {
+                    min = 2;
+                    max = this.pageNum > min ? this.pageNum - 1 : min;
+                } else {
+                    var area = Math.ceil(this.btn.maxIndex - 3) / 2;
+                    max = +this.btn.currentIndex + area >= this.pageNum - 1 ? this.pageNum - 1 : +this.btn.currentIndex + area;
+                    min = +this.btn.currentIndex - area <= 2 ? 2 : +this.btn.currentIndex - area;
 
-                if (this.btn.currentIndex - min < area) { //如果最小值按钮个数不够，则从最大值那边添数
-                    max = (max + area - (this.btn.currentIndex - min)) >= this.pageNum - 1 ? this.pageNum - 1 : +max + area - (this.btn.currentIndex - min);
-                } else if (max - this.btn.currentIndex < area) {
-                    min = (min - area + (max - this.btn.currentIndex)) <= 2 ? 2 : min - area + (max - this.btn.currentIndex);
-                }
-            }
-
-            if (min <= max && min < this.pageNum) {
-                for (var i = min; i <= max; i++) {
-                    if (i != this.btn.currentIndex) {
-                        btnEle += '<a class="btn pageNum btn-default">' + i + '</a>';
-                    } else {
-                        btnEle += '<a class="btn pageNum btn-default active">' + i + '</a>';
+                    if (this.btn.currentIndex - min < area) { //如果最小值按钮个数不够，则从最大值那边添数
+                        max = (max + area - (this.btn.currentIndex - min)) >= this.pageNum - 1 ? this.pageNum - 1 : +max + area - (this.btn.currentIndex - min);
+                    } else if (max - this.btn.currentIndex < area) {
+                        min = (min - area + (max - this.btn.currentIndex)) <= 2 ? 2 : min - area + (max - this.btn.currentIndex);
                     }
                 }
-            }
+
+                if (min <= max && min < this.pageNum) {
+                    for (var i = min; i <= max; i++) {
+                        if (i != this.btn.currentIndex) {
+                            btnEle += '<a class="btn pageNum btn-default">' + i + '</a>';
+                        } else {
+                            btnEle += '<a class="btn pageNum btn-default active">' + i + '</a>';
+                        }
+                    }
+                }
 
 
-            if (this.btn.currentIndex == 1) {
-                btnFirst = '<a class="btn pageNum btn-default active">1</a>';
-                btnLast = '<a class="btn pageNum btn-default">' + this.pageNum + '</a>';
-            } else if (this.btn.currentIndex == this.pageNum) {
-                btnFirst = '<a class="btn pageNum btn-default">1</a>';
-                btnLast = '<a class="btn pageNum btn-default active">' + this.pageNum + '</a>';
+                if (this.btn.currentIndex == 1) {
+                    btnFirst = '<a class="btn pageNum btn-default active">1</a>';
+                    btnLast = '<a class="btn pageNum btn-default">' + this.pageNum + '</a>';
+                } else if (this.btn.currentIndex == this.pageNum) {
+                    btnFirst = '<a class="btn pageNum btn-default">1</a>';
+                    btnLast = '<a class="btn pageNum btn-default active">' + this.pageNum + '</a>';
+                } else {
+                    btnFirst = '<a class="btn pageNum btn-default">1</a>';
+                    btnLast = '<a class="btn pageNum btn-default">' + this.pageNum + '</a>';
+                }
+
+                if (min > 2) {
+                    btnFirst += this.btn.hiddenInfo;
+                }
+                if (max < this.pageNum - 1) {
+                    btnLast = this.btn.hiddenInfo + btnLast;
+                }
             } else {
-                btnFirst = '<a class="btn pageNum btn-default">1</a>';
-                btnLast = '<a class="btn pageNum btn-default">' + this.pageNum + '</a>';
+                btnFirst = '<a class="btn pageNum btn-default active">1</a>';
             }
 
-            if (min > 2) {
-                btnFirst += this.btn.hiddenInfo;
-            }
-            if (max < this.pageNum - 1) {
-                btnLast = this.btn.hiddenInfo + btnLast;
-            }
 
             btnWrap = btnWrap.replace('%btns%', btnFirst + btnEle + btnLast);
             this.btn.insertArea.html(btnWrap);
@@ -686,19 +841,31 @@ TablePage.prototype = TablePage.fn = {
         }
     },
     render: function() {
-       // this.$el.parent().children('table:first').html(this.html.table + this.html.tHead + this.html.tBody + '</table>');//再次查找table防止元素失效
-       this.$el.html(this.html.table + this.html.tHead + this.html.tBody + '</table>');
+        //this.$el.parent().children('table:first').html(this.html.tHead + this.html.tBody);//再次查找table防止元素失效
+        //this.$el.prop('outerHTML', this.html.table + this.html.tHead + this.html.tBody + '</table>')
+        this.$el.html(this.html.tHead + this.html.tBody);
     },
     goPage: function(pageIndex) {
-        if (this.showStyle == 1) {
+        if (this.showStyle === 1) {
             this.currentIndex = (pageIndex - 1) * this.perNum;
             this.btn.currentIndex = pageIndex;
         } else {
             this.currentIndex = 0;
             this.btn.currentIndex = pageIndex;
         }
-        if (this.updateCallback && typeof this.updateCallback == 'function') {
-            this.updateCallback.apply(this, arguments);
+        if (this.showStyle === 0 && this.updateCallback && typeof this.updateCallback === 'function') {
+            var that = this;
+            this.updateCallback.call(this, {
+                pageIndex: pageIndex,
+                perNum: this.perNum,
+                sortDir: this.sortDir,
+                sortName: this.sortName,
+                searchKeyWord: this.searchKeyWord
+            }, function(data) {
+                data && that.dataOpt.updateData();
+                that.tableOpt.createTable.call(that);
+            });
+
         } else {
             this.tableOpt.createTable.call(this);
         }
@@ -706,7 +873,7 @@ TablePage.prototype = TablePage.fn = {
     },
     extend: function(obj) {
         if (!obj && Object.prototype.toString.call(obj) !== '[object Object]') return;
-        for(var prop in obj) {
+        for (var prop in obj) {
             if (obj.hasOwnProperty(prop)) {
                 //if (this[prop]) throw new Error('the function name: ' + prop + ' has already exist!');
                 this[prop] = obj[prop];
@@ -780,80 +947,106 @@ $.isEqual = function(a, b) {
 
 $.fn.extend({
     getVal: function() {
-        if ($(this).length == 1) {
-            if (this.tagName == "input") {
-                return $(this).val();
+        var USERTYPE = {
+            //TODO:预留，暂时还没用到
+        };
+        return function() {
+            if ($(this).length === 1) {
+                if ($(this)[0].tagName.toLowerCase() === "input") {
+                    return $(this).val();
+                } else {
+                    return $(this).text();
+                }
             } else {
-                return $(this).text();
+                return $(this).filter(function() {
+                    return this.checked && this.value;
+                }).map(function() {
+                    return this.value;
+                }).get();
             }
-        } else {
-            return $(this).filter(function() {
-                return this.checked && this.value;
-            }).map(function() {
-                return this.value;
-            }).get();
-        }
+        }.call(this);
     },
     setVal: function(value) {
-        if ($(this).length < 0 || value === undefined) {
-            return;
-        }
-        var tagName = $(this)[0].tagName.toLowerCase(),
-            type = $(this).attr("type");
-        if (tagName == "input") {
-            switch (type) {
-                case "checkbox":
-                    if ($(this).attr('group-index')) {
-                        if ($(this).attr('group-index') !== '0') break;
-
-                        var groups = $('[name=' + this[0].name + ']'),
-                            valueArr;
-                        if (!value || !value.toString().length) {
-                            valueArr = [];
-                            valueArr.length = groups.length;
-                        } else {
-                            valueArr = value.toString().split('');
-                            if (valueArr.length < groups.length) break;
-                        }
-
-                        for (var i = 0, l = groups.length; i < l; i++) {
-                            if (valueArr[i] === '1') {
-                                groups[i].checked = true;
-                            } else {
-                                groups[i].checked = false;
-                            }
-                        }
-                    } else if (value == $(this).val() || value == "enabled" || value == "启用" || value == "1" || value == "true") {
-                        $(this).attr("checked", true);
-                    } else {
-                        $(this).attr("checked", false);
-                    }
-                    break;
-                case "radio":
-                    $(this).val([value]);
-                    break;
-                case "text":
-                case "password": 
-                default:
-                    $(this).val(value);
-            }
-        } else if (tagName == "select") {
-            if ($(this).find("option[value='" + value + "']").length < 1) {
-                //支持手动填写的元素赋值,需要包含writeable属性
-                var writeAbleOption;
-                if ((writeAbleOption = $(this).find("option[writeable]")).length > 0) {
-                    writeAbleOption.val(value);
-                    $(this).val(value);
-                } else {
-                    $(this).val([value]);
+        var USERTYPE = {
+            'ipBox': function(value) {
+                if (this.children().length < 1) {
+                    this.toTextboxs('ip');
                 }
-                
-            } else {
-                $(this).val([value]);
+                this[0].val(value);
+            },
+            'macBox': function() {
+                if (this.children().length < 1) {
+                    this.toTextboxs('ip');
+                }
+                this[0].val(value);
             }
-        } else {
-            $(this).text(value);
-        }
+        };
+        return function(value) {
+            if ($(this).length < 1 || value === undefined) {
+                return;
+            }
+            var tagName = $(this)[0].tagName.toLowerCase(),
+                type = $(this).attr("type"),
+                userType = $(this).attr('user-type');
+            if (!userType) {
+                if (tagName == "input") {
+                    switch (type) {
+                        case "checkbox":
+                            if ($(this).attr('group-index')) {
+                                if ($(this).attr('group-index') !== '0') break;
+
+                                var groups = $('[name=' + this[0].name + ']'),
+                                    valueArr;
+                                if (!value || !value.toString().length) {
+                                    valueArr = [];
+                                    valueArr.length = groups.length;
+                                } else {
+                                    valueArr = value.toString().split('');
+                                    if (valueArr.length < groups.length) break;
+                                }
+
+                                for (var i = 0, l = groups.length; i < l; i++) {
+                                    if (valueArr[i] === '1') {
+                                        groups[i].checked = true;
+                                    } else {
+                                        groups[i].checked = false;
+                                    }
+                                }
+                            } else if (value == $(this).val() || value == "enabled" || value == "启用" || value == "1" || value == "true") {
+                                $(this).attr("checked", true);
+                            } else {
+                                $(this).attr("checked", false);
+                            }
+                            break;
+                        case "radio":
+                            $(this).val([value]);
+                            break;
+                        case "text":
+                        case "password":
+                        default:
+                            $(this).val(value);
+                    }
+                } else if (tagName == "select") {
+                    if ($(this).find("option[value='" + value + "']").length < 1) {
+                        //支持手动填写的元素赋值,需要包含writeable属性
+                        var writeAbleOption;
+                        if ((writeAbleOption = $(this).find("option[writeable]")).length > 0) {
+                            writeAbleOption.val(value);
+                            $(this).val(value);
+                        } else {
+                            $(this).val([value]);
+                        }
+
+                    } else {
+                        $(this).val([value]);
+                    }
+                } else {
+                    $(this).text(value);
+                }
+            } else {
+                USERTYPE[userType].call(this, value);
+            }
+        }.call(this, value);
     },
     collect: function() {
         return this.map(function() {
@@ -898,7 +1091,7 @@ $.fn.extend({
     },
     serializeJson: function() {
         var serializeObj = {},
-        array = this.collect();
+            array = this.collect();
 
         $(array).each(function() {
             if (serializeObj[this.name]) {
@@ -924,11 +1117,14 @@ $.fn.extend({
  * 
  * 批量赋值
  * @param  {[type]} ele [container id，或者jquery dom对象集]
- * @return {[type]}      [description]
+ * @param  {object} [data] [数据]
+ * @param {bool} [updateAll] [description]
+ * @return {null}      [description]
  */
 /* global -AutoFill */
-var AutoFill = function(ele, data) {
+var AutoFill = function(ele, data, updateAll) {
     if (!!ele) {
+        this.updateAll = updateAll;
         if (typeof ele == 'string') {
             this.$formControls = $(ele).find('[name]');
             this.$commonControls = $(ele).find('[data-bind]');
@@ -939,25 +1135,29 @@ var AutoFill = function(ele, data) {
             ele.each(function() {
                 if ($(this).attr('data-bind')) {
                     commonControls.push(this);
-                } else {
+                } else if (updateAll !== false) {
                     formControls.push(this);
                 }
             });
             this.$commonControls = $(commonControls);
             this.$formControls = $(formControls);
         }
-        this.updateData(data);
+        if (data) {
+            this.updateData(data);
+        }
     } else {
         Debug.log('please specify the ele!');
     }
+    return this;
 };
 
 AutoFill.prototype = {
     constructor: AutoFill,
     data: null,
+    updateAll: true,
     originData: null,
-    $formControls: null,
-    $commonControls: null,
+    $formControls: [],
+    $commonControls: [],
 
     listObj: function(obj) {
         var _obj = {};
@@ -979,10 +1179,7 @@ AutoFill.prototype = {
 
     fill: function() {
         var data;
-        for (var i = 0, l = this.$formControls.length; i < l; i++) {
-            data = this.data[this.$formControls.eq(i).attr('name')];
-            this.$formControls.eq(i).setVal(data);
-        }
+
         for (var i = 0, l = this.$commonControls.length; i < l; i++) {
             data = this.data[this.$commonControls.eq(i).attr('data-bind')];
             if (this.$commonControls[i].tagName.toLowerCase() == 'table') {
@@ -990,8 +1187,8 @@ AutoFill.prototype = {
                 if (!$(this.$commonControls.eq(i)).data("tablepage")) {
                     table = new TablePage(this.$commonControls.eq(i));
                     table.data = data;
-                    table.init();     
-                    $(this.$commonControls.eq(i)).data("tablepage", table);           
+                    table.init();
+                    $(this.$commonControls.eq(i)).data("tablepage", table);
                 } else {
                     table = $(this.$commonControls.eq(i)).data("tablepage");
                     table.data = data;
@@ -1001,9 +1198,19 @@ AutoFill.prototype = {
                 this.$commonControls.eq(i).setVal(data);
             }
         }
+
+        if (this.updateAll !== false) {
+            for (var i = 0, l = this.$formControls.length; i < l; i++) {
+                data = this.data[this.$formControls.eq(i).attr('name')];
+                this.$formControls.eq(i).setVal(data);
+            }
+        }
+
+
         return this;
     },
-    updateData: function(data) {
+    updateData: function(data, updateAll) {
+        this.updateAll = updateAll === undefined ? this.updateAll : updateAll;
         if (data) {
             this.originData = data;
             this.data = this.listObj(data);
@@ -1017,7 +1224,7 @@ AutoFill.prototype = {
 var AutoCollect = function(ele) {
     if (!!ele) {
         if (typeof ele == 'string') {
-            this.$formControls = $(ele).find('[name]').filter(':visible:enabled, [type="hidden"]');
+            this.$formControls = $(ele).find('[name]').filter(':visible:enabled, [type="hidden"], :visible.input-append');
             this.$commonControls = $(ele).find('[data-bind]:visible');
         } else if (typeof ele == 'object' && !!ele.length) {
             var that = this,
@@ -1095,63 +1302,68 @@ R.View = R.Core.extend({
             beforeSubmit: config.beforeSubmit
         };
 
-        this.update();
+
         if (this.hasInit) {
+            this.update(false); //只更新非表单元素
             return;
         } else {
+            this.update(); //更新全部
             this.initEvents();
         }
         this.hasInit = true;
 
         return this;
     },
-    update: function(forceUpdate, callback, afterCallback) {
+    update: function(updateAll, callback, afterCallback) {
         this.defaults.updateCallback = callback || this.defaults.updateCallback;
-        if (this.defaults.originData && forceUpdate === false) {
-            this.initElements();
-        } else {
-            if (!this.defaults.fetchUrl) {
-                Debug.log('fetchUrl not specified!');
-                return;
-            }
-            var that = this;
-            $.GetSetData.getData(this.defaults.fetchUrl, function(res) {
-                if (res !== '') {
-                    res = $.parseJSON(res);
-                    that.defaults.originData = res;
-                    if (that.defaults.updateCallback && typeof that.defaults.updateCallback == 'function') {
-                        if (!(res = that.defaults.updateCallback.call(this, res))) return;
-                    }
 
-                    that.initElements(res);
-                    if (afterCallback && typeof afterCallback == 'function') {
-                        afterCallback.apply(this, arguments);
-                    }
-                }
-                Debug.log(res);
-            });
+        if (!this.defaults.fetchUrl) {
+            Debug.log('fetchUrl not specified!');
+            return;
         }
+        var that = this;
+        $.GetSetData.getData(this.defaults.fetchUrl, function(res) {
+            if (res !== '') {
+                res = $.parseJSON(res);
+                that.defaults.originData = res;
+                if (that.defaults.updateCallback && typeof that.defaults.updateCallback == 'function') {
+                    if ((res = that.defaults.updateCallback.call(this, res, updateAll)) === false) return;
+                }
+
+                that.initElements(res, updateAll);
+                if (afterCallback && typeof afterCallback == 'function') {
+                    afterCallback.apply(this, arguments);
+                }
+            }
+            Debug.log(res);
+        });
+
     },
-    initElements: function(data) {
+    initElements: function(data, updateAll) {
         data = data || this.defaults.originData;
         if (!this.handler) {
             if (this.$el.length < 2) {
-                this.handler = new AutoFill(this.defaults.container, data);
-                this.validateObj = $.validate({wrapElem: this.defaults.container});
+                this.handler = new AutoFill(this.defaults.container, data, updateAll);
+                this.validateObj = $.validate({
+                    wrapElem: this.defaults.container
+                });
             } else {
-                this.handler = new AutoFill(this.$el, data);
-                this.validateObj = $.validate({wrapElem: this.$el});
+                this.handler = new AutoFill(this.$el, data, updateAll);
+                this.validateObj = $.validate({
+                    wrapElem: this.$el
+                });
             }
         } else {
-            this.handler.updateData(data);
+            this.handler.updateData(data, updateAll);
         }
         this.originData = data;
+        this.defaults.originData = data;
         if (typeof this.defaults.afterUpdate === "function") {
             this.defaults.afterUpdate();
         }
     },
     validate: function(data) {
-        var $validateWrap = $(this.$el.length < 2?this.defaults.container: this.$el);
+        var $validateWrap = $(this.$el.length < 2 ? this.defaults.container : this.$el);
 
         this.submitData = data || this.submitData;
         return this.validateObj.check($validateWrap.find(".validatebox"));
@@ -1198,7 +1410,7 @@ R.View = R.Core.extend({
 
             $.GetSetData.setData(url, data, function(res) {
                 that.defaults.afterSubmit = afterSubmit || that.defaults.afterSubmit;
-                if (that.defaults.afterSubmit && typeof that.defaults.afterSubmit ==='function') {
+                if (that.defaults.afterSubmit && typeof that.defaults.afterSubmit === 'function') {
                     that.defaults.afterSubmit.call(this, res);
                 }
             });
@@ -1243,6 +1455,73 @@ R.View = R.Core.extend({
 });
 
 
+R.TablePageView = R.View.extend({
+    name: 'TablePageView',
+    fetchUrl: null,
+    tableEl: null,
+    tableObj: null,
+    tableEvent: null,
+    tableConfig: {
+        perNum: 10,
+        pageNum: 1 //页数
+            ,
+        showSearch: true,
+        allowSort: true,
+        hasCheckbox: true,
+        hasOrder: false //是否包含索引
+            ,
+        sortDir: 'asc',
+        showStyle: 1 //0: 部分数据 1:全部数据
+            ,
+        updateCallback: null //部分数据时需要通过此接口设置数据
+    },
+    init: function(el, config) {
+        if (config && !$.isEmptyObject(config)) {
+            this.tableConfig = {
+                perNum: config.perNum,
+                pageNum: config.pageNum,
+                showSearch: config.showSearch,
+                allowSort: config.allowSort,
+                hasCheckbox: config.hasCheckbox,
+                hasOrder: config.hasOrder,
+                sortDir: config.sortDir,
+                updateCallback: config.updateCallback
+            };
+        };
+
+        this._super(el, config);
+    },
+    initElements: function(data) {
+        data = data || this.defaults.originData;
+        if (data) {
+            if (!this.tableObj) this.tableObj = new TablePage(this.tableEl, null, this.tableConfig);
+            if (data.length) { //如果数据为数组
+                this.tableObj.data = data;
+            } else {
+                if (!this.handler) {
+                    this.handler = new AutoFill(this.defaults.container, data);
+                    this.tableObj.data = data[this.tableEl.attr('table-data')];
+                } else {
+                    this.handler.updateData(data);
+                }
+            }
+            this.tableObj.init();
+        }
+
+        this.originData = data;
+        this.defaults.originData = data;
+        Debug.log('数据更新完成');
+    },
+    initEvents: function() {
+        this._super(this.defaults.events);
+        this.tableEl = $(this.defaults.container).find('table:first');
+        if (this.tableConfig.hasCheckbox !== false) {
+            this.tableEvent = new TableSelectEvent(this.tableEl).init();
+        }
+    }
+});
+
+
 R.FormView = R.View.extend({
     name: 'FormView',
     afterSubmit: null,
@@ -1252,7 +1531,7 @@ R.FormView = R.View.extend({
         config = config || {};
         config.data = config.data || {};
         config.submitUrl = config.submitUrl || $(el).attr('action');
-        
+
         this._super(el, config);
         if (!config.data || $.isEmptyObject(config.data)) {
             this.reset();
@@ -1261,16 +1540,18 @@ R.FormView = R.View.extend({
     update: function(data, callback) {
         var res;
 
-        this.defaults.updateCallback = callback || this.defaults.updateCallback;        
-
-        if (this.defaults.updateCallback && typeof this.defaults.updateCallback == 'function') {
-            res = this.defaults.updateCallback.call(this, data);
+        if (callback && typeof callback == 'function') {
+            res = callback.call(this, data);
         }
 
         data = (res || data);
         if (data) {
+            this.defaults.originData = data;
             this.initElements(data);
+        } else if (this.defaults.fetchUrl) {
+            this._super();
         } else {
+            this.defaults.originData = null;
             this.reset();
         }
     },
@@ -1282,74 +1563,18 @@ R.FormView = R.View.extend({
         var that = this;
         this._super(this.defaults.events);
         if (!this.hasInit) {
-            $(this.defaults.container).find('[type="submit"]').off('click.R.FormView').on('click.R.FormView', function(e) {
-                e.preventDefault();
-                that.submit(null, null, that.afterSubmit, that.beforeSubmit);
-            });
+            $(this.defaults.container)
+                .find('[type="submit"]').off('click.R.FormView').on('click.R.FormView', function(e) {
+                    e.preventDefault();
+                    that.submit(null, null, that.afterSubmit, that.beforeSubmit);
+                }).end()
+                .find('[type="reset"], .iframe-close').off('click.R.FormView').on('click.R.FormView', function() {
+                    operateIframe.closeWindow();
+                });
         }
     }
 });
 
-
-var TableData = function(data, cols) { //不完善，暂时只能添加checkbox和operate两个
-    this.originData = data || null;
-    this.cols = cols || [];
-    if (!this.originData) {
-        throw new Error('data is null!');
-    } else if (!(this.originData instanceof Array)) {
-        throw new Error('data must be array');
-    }
-    if (!this.cols.length) {
-        if (typeof this.cols == 'string') {
-            this.cols = new Array(this.cols);
-        } else if (this.cols instanceof Array) {
-            this.cols = cols;
-        }
-    }
-    this.init();
-};
-
-TableData.prototype = {
-    constructor: TableData,
-    originData: null,
-    returnData: null,
-    cols: [],
-    init: function() {
-        return this.update();
-    },
-    get: function() {
-        return this.returnData;
-    },
-    update: function() {
-        //TODO:待进一步完善
-        var checkbox = false,
-            cols = this.cols,
-            colsLen = cols.length,
-            data = [];
-
-        var col = cols.shift();
-        if (col !== 'checkbox') {
-            cols.unshift(col);
-        } else {
-            checkbox = true;
-        }
-
-        for (var i = 0, l = this.originData.length; i < l; i++) {
-            data[i] = {};
-            if (checkbox) {
-                data[i]['checkbox'] = '<input type="checkbox" tIndex="' + i + '">';
-            }
-            for (var prop in this.originData[i]) {
-                data[i][prop] = this.originData[i][prop];
-            }
-            if (!!cols.length) {
-                data[i]['operate'] = cols;
-            }
-        }
-        this.returnData = data;
-        return this;
-    }
-}
 
 /**
  * 提示框
@@ -1382,32 +1607,6 @@ function showMsg(msg, autoClose, timeout) {
 }
 
 
-var showSaveMsg = (function() {
-    var ajaxMsgObj = null,
-        status = "hide";
-
-    return function (msg, timeout) {
-        if (window != top) {
-            top.showSaveMsg.apply(null, arguments);
-            return;
-        }
-        status = "show";
-        if (!ajaxMsgObj) {
-            ajaxMsgObj = $.ajaxMessage(msg);
-        } else {
-            ajaxMsgObj.text(msg);
-            ajaxMsgObj.show();
-        }
-        if (timeout) {
-            status = "hide";
-            setTimeout(function() { 
-                if (status == "hide") {
-                    ajaxMsgObj.hide();
-                }
-            }, timeout);
-        }
-    }    
-})();
 
 
 var _ = (typeof _ === 'undefined' ? function(nkey, replacements) {
@@ -1431,47 +1630,4 @@ var _ = (typeof _ === 'undefined' ? function(nkey, replacements) {
 $(function() {
     if (window == top) return; //这里不要用全等，否则ie8下会有问题
     top.ResetHeight && top.ResetHeight.initHeight();
-});
-
-
-/**
- * other function
- */
-
-/* global -TableSelectEvent */
-var TableSelectEvent = function($container) {
-    var hasInit = false;
-
-    function setTableListChecked(state) {
-        $container.find('tbody input:enabled').prop('checked', state);
-    }
-
-    return {
-        getSelectedItems: function($ele) {
-            return $container.find('table tbody input').map(function() {
-                return this.checked ? ~~$(this).attr('tindex') : null;
-            }).get();
-        },
-        init: function() {
-            if (!hasInit) {
-                $container.on('click', 'input', function() {
-                    if (this.parentNode.tagName.toLocaleLowerCase() === 'th') {
-                        setTableListChecked(this.checked);
-                    } else {
-                        if (!this.checked) {
-                            $container.find('thead input').prop('checked', false);
-                        }
-                    }
-                });
-            }
-            hasInit = true;
-            return this;
-        }
-    };
-}
-
-
-$('.modal').on('hidden.bs.modal', function() {
-    $(this).find('.validatebox-tip-wrap').hide().data("aniStatus", "none");
-    $(this).find('.validatebox-invalid').removeClass('validatebox-invalid');
 });
