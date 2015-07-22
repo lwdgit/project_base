@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Demo:: vertical align: middle</title>
+    <meta lang="en" name="author" content="Spenser Lee" />
+    <meta lang="en" name="copyright" content="(c)2006 Liberty Studio" />
+    <style media="screen" type="text/css">
+    html,
+    body,
+    div {
+        margin: 0;
+        padding: 0;
+        border: 0
+    }
+    html {
+        min-width: 779px
+    }
+    body {
+        background: #fff;
+        color: #596480;
+        text-align: center
+    }
+    div#main-wrapper {
+        padding: 12px 5px;
+        width: 769px;
+        margin: 0 auto
+    }
+    div#demo-5 {
+        height: 300px;
+        position: relative
+    }
+    div#demo-5 div {
+        position: absolute;
+        top: 50%;
+        left: 0
+    }
+    div#demo-5 p {
+        position: relative;
+        top: -50%
+    }
+    div#main-wrapper>div#demo-5 {
+        position: static;
+        display: table
+    }
+    div#main-wrapper>div#demo-5>div {
+        display: table-cell;
+        vertical-align: middle;
+        position: static
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main-wrapper">
+        <div class="demo" id="demo-5">
+            <div>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas dignissim diam eu sem. Proin nunc ante, accumsan sollicitudin, sodales at, semper sed, ipsum. Etiam orci. Vestibulum magna lectus, venenatis nec, tempus ac, dictum vel, lorem.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

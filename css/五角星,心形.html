@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	.egg {
+		width: 136px;
+	    height: 190px;
+	    background: #ffc000;
+	    display: block;
+	    -webkit-border-radius: 63px 63px 63px 63px / 108px 108px 72px 72px;
+	    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+	}
+
+	#heart {
+	    position: relative;
+	}
+	  
+	#heart:before,#heart:after {
+	    content: "";
+	    width: 70px;
+	    height: 115px;
+	    position: absolute;
+	    background: red;
+	    left: 70px;
+	    top: 0;
+	    -webkit-border-radius: 50px 50px 0 0;
+	    -moz-border-radius: 50px 50px 0 0;
+	    border-radius: 50px 50px 0 0;
+	    -webkit-transform: rotate(-45deg);
+	    -moz-transform: rotate(-45deg);
+	    -ms-transform: rotate(-45deg);
+	    -o-transform: rotate(-45deg);
+	    transform: rotate(-45deg);
+	    -webkit-transform-origin: 0 100%;
+	    -moz-transform-origin: 0 100%;
+	    -ms-transform-origin: 0 100%;
+	    -o-transform-origin: 0 100%;
+	    transform-origin: 0 100%;
+	}
+	  
+	#heart:after {
+	    left: 0;
+	    -webkit-transform: rotate(45deg);
+	    -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	    -o-transform: rotate(45deg);
+	    transform: rotate(45deg);
+	    -webkit-transform-origin: 100% 100%;
+	    -moz-transform-origin: 100% 100%;
+	    -ms-transform-origin: 100% 100%;
+	    -o-transform-origin: 100% 100%;
+	    transform-origin: 100% 100%;
+	}     
+	#star {
+	    width: 0;
+	    height: 0;
+	    margin: 50px 0;
+	    color: #fc2e5a;
+	    position: relative;
+	    display: block;
+	    border-right: 100px solid transparent;
+	    border-bottom: 70px solid #fc2e5a;
+	    border-left: 100px solid transparent;
+	    -moz-transform: rotate(35deg);
+	    -webkit-transform: rotate(35deg);
+	    -ms-transform: rotate(35deg);
+	    -o-transform: rotate(35deg);
+	}
+	  
+	#star:before {
+	    height: 0;
+	    width: 0;
+	    position: absolute;
+	    display: block;
+	    top: -45px;
+	    left: -65px;
+	    border-bottom: 80px solid #fc2e5a;
+	    border-left: 30px solid transparent;
+	    border-right: 30px solid transparent;
+	    content: '';
+	    -webkit-transform: rotate(-35deg);
+	    -moz-transform: rotate(-35deg);
+	    -ms-transform: rotate(-35deg);
+	    -o-transform: rotate(-35deg);
+	}
+	  
+	#star:after {
+	    content: '';
+	    width: 0;
+	    height: 0;
+	    position: absolute;
+	    display: block;
+	    top: 3px;
+	    left: -105px;
+	    color: #fc2e5a;
+	    border-right: 100px solid transparent;
+	    border-bottom: 70px solid #fc2e5a;
+	    border-left: 100px solid transparent;
+	    -webkit-transform: rotate(-70deg);
+	    -moz-transform: rotate(-70deg);
+	    -ms-transform: rotate(-70deg);
+	    -o-transform: rotate(-70deg);
+	}        
+
+	</style>
+</head>
+<body>
+	<div class="egg"></div>
+	<div id="heart"></div>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<div id="star"></div>
+</body>
+</html>
