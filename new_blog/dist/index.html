@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    <title>tests</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    
+</head>
+
+<body>
+    <div id="navList">
+    </div>
+<script type="text/javascript" src="/components/require.js"></script>
+<script type="text/javascript">/*resourcemap*/
+require.config({paths:{
+  "components/text": "/components/text",
+  "components/page": "/components/page",
+  "modules/router": "/modules/router"
+}});
+
+      require(['components/text!/nav.tpl', 'modules/router'], function(res, router) {
+          document.querySelector('#navList').innerHTML = res;
+          router.init();
+      });
+    </script>
+</body>
+
+</html>

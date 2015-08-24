@@ -1,0 +1,1 @@
+reasy.extend('require');
