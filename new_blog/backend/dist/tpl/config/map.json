@@ -1,0 +1,178 @@
+{
+    "res": {
+        "page/index.php": {
+            "uri": "/page/index.php",
+            "type": "php",
+            "extras": {
+                "async": [
+                    "widget/scroll/scroll.js"
+                ]
+            },
+            "deps": [
+                "widget/footer/test.css"
+            ]
+        },
+        "widget/scroll/scroll.js": {
+            "uri": "/static/widget/scroll/scroll.js",
+            "type": "js",
+            "extras": {
+                "moduleId": "widget/scroll/scroll"
+            },
+            "deps": [
+                "widget/scroll/lib/jquery.scrollTo-1.3.3.js",
+                "widget/scroll/lib/jquery.localscroll-1.2.5.js",
+                "widget/scroll/lib/jquery.serialScroll-1.2.1.js"
+            ]
+        },
+        "widget/scroll/lib/jquery.scrollTo-1.3.3.js": {
+            "uri": "/static/widget/scroll/lib/jquery.scrollTo-1.3.3.js",
+            "type": "js",
+            "extras": {
+                "moduleId": "widget/scroll/lib/jquery.scrollTo-1.3.3"
+            }
+        },
+        "widget/scroll/lib/jquery.localscroll-1.2.5.js": {
+            "uri": "/static/widget/scroll/lib/jquery.localscroll-1.2.5.js",
+            "type": "js",
+            "extras": {
+                "moduleId": "widget/scroll/lib/jquery.localscroll-1.2.5"
+            }
+        },
+        "widget/scroll/lib/jquery.serialScroll-1.2.1.js": {
+            "uri": "/static/widget/scroll/lib/jquery.serialScroll-1.2.1.js",
+            "type": "js",
+            "extras": {
+                "moduleId": "widget/scroll/lib/jquery.serialScroll-1.2.1"
+            }
+        },
+        "widget/footer/test.css": {
+            "uri": "/static/widget/footer/test.css",
+            "type": "css"
+        },
+        "static/css/coda-slider.css": {
+            "uri": "/static/css/coda-slider.css",
+            "type": "css"
+        },
+        "static/css/tooplate_style.css": {
+            "uri": "/static/css/tooplate_style.css",
+            "type": "css"
+        },
+        "static/js/coda-slider.js": {
+            "uri": "/static/js/coda-slider.js",
+            "type": "js"
+        },
+        "static/js/jquery-1.2.6.js": {
+            "uri": "/static/js/jquery-1.2.6.js",
+            "type": "js"
+        },
+        "static/js/jquery.easing.1.3.js": {
+            "uri": "/static/js/jquery.easing.1.3.js",
+            "type": "js"
+        },
+        "static/js/mod.js": {
+            "uri": "/static/js/mod.js",
+            "type": "js"
+        },
+        "widget/about/about.js": {
+            "uri": "/static/widget/about/about.js",
+            "type": "js",
+            "extras": {
+                "moduleId": "widget/about/about"
+            }
+        },
+        "widget/about/about.php": {
+            "uri": "/widget/about/about.php",
+            "type": "php",
+            "deps": [
+                "widget/about/about.js"
+            ]
+        },
+        "widget/contact/contact.php": {
+            "uri": "/widget/contact/contact.php",
+            "type": "php"
+        },
+        "widget/footer/footer.css": {
+            "uri": "/static/widget/footer/footer.css",
+            "type": "css"
+        },
+        "widget/footer/footer.php": {
+            "uri": "/widget/footer/footer.php",
+            "type": "php",
+            "deps": [
+                "widget/footer/footer.css"
+            ]
+        },
+        "widget/footer/logos/facebook.png": {
+            "uri": "/static/widget/footer/logos/facebook.png",
+            "type": "png"
+        },
+        "widget/footer/logos/flickr.png": {
+            "uri": "/static/widget/footer/logos/flickr.png",
+            "type": "png"
+        },
+        "widget/footer/logos/myspace.png": {
+            "uri": "/static/widget/footer/logos/myspace.png",
+            "type": "png"
+        },
+        "widget/footer/logos/twitter.png": {
+            "uri": "/static/widget/footer/logos/twitter.png",
+            "type": "png"
+        },
+        "widget/footer/logos/youtube.png": {
+            "uri": "/static/widget/footer/logos/youtube.png",
+            "type": "png"
+        },
+        "widget/gallery/gallery.php": {
+            "uri": "/widget/gallery/gallery.php",
+            "type": "php"
+        },
+        "widget/gallery/img/image_01.jpg": {
+            "uri": "/static/widget/gallery/img/image_01.jpg",
+            "type": "jpg"
+        },
+        "widget/gallery/img/image_02.jpg": {
+            "uri": "/static/widget/gallery/img/image_02.jpg",
+            "type": "jpg"
+        },
+        "widget/gallery/img/image_03.jpg": {
+            "uri": "/static/widget/gallery/img/image_03.jpg",
+            "type": "jpg"
+        },
+        "widget/gallery/img/image_04.jpg": {
+            "uri": "/static/widget/gallery/img/image_04.jpg",
+            "type": "jpg"
+        },
+        "widget/gallery/img/image_05.jpg": {
+            "uri": "/static/widget/gallery/img/image_05.jpg",
+            "type": "jpg"
+        },
+        "widget/gallery/img/image_06.jpg": {
+            "uri": "/static/widget/gallery/img/image_06.jpg",
+            "type": "jpg"
+        },
+        "widget/header/header.css": {
+            "uri": "/static/widget/header/header.css",
+            "type": "css"
+        },
+        "widget/header/header.php": {
+            "uri": "/widget/header/header.php",
+            "type": "php",
+            "deps": [
+                "widget/header/header.css"
+            ]
+        },
+        "widget/home/home.php": {
+            "uri": "/widget/home/home.php",
+            "type": "php"
+        },
+        "widget/service/service.php": {
+            "uri": "/widget/service/service.php",
+            "type": "php"
+        },
+        "widget/sidebar/sidebar.php": {
+            "uri": "/widget/sidebar/sidebar.php",
+            "type": "php"
+        }
+    },
+    "pkg": {}
+}

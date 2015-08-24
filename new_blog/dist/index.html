@@ -22,6 +22,9 @@ require.config({paths:{
           document.querySelector('#navList').innerHTML = res;
           router.init();
       });
+      require(['data/test'], function(res) {
+        console.log(res);
+      });
     </script>
 </body>
 
