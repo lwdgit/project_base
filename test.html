@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="format-detection" content="telephone=no" />
+	<title>Document</title>
+	<style>
+		.smsCode span{
+			padding: 20px;
+			border: 1px solid #000;
+		}
+		input[type="number"] {
+			opacity: 0
+		}
+	</style>
+</head>
+<body>
+<div class="smsCode" id="smsCode">
+	<span></span>
+	<span></span>
+	<span></span>
+	<span></span>
+	<span></span>
+	<span></span>
+</div>
+<br>
+<br>
+<br>
+<input type="number">
+<script>
+	function parseInput() {
+		var number = document.querySelector('input[type=number]').value;
+		var showNum = number.toString().split('');
+		for (var i = 0; i < 6; i++) {
+			if (showNum[i] === undefined)showNum[i] = '';
+			document.querySelector('#smsCode>span:nth-child('+ (i  + 1) +')').innerHTML = showNum[i];
+		}
+	}
+	document.querySelector('#smsCode').addEventListener('click', function() {
+		document.querySelector('input[type=number]').focus();
+	}, false);
+	document.onkeyup = function (argument) {
+		parseInput();
+	};
+</script>
+</body>
+</html>
