@@ -435,7 +435,7 @@ var TableSelectEvent = function($container) {
 
     return {
         getSelectedItems: function($ele) {
-            return $container.find('tbody input').map(function() {
+            return $container.find('tbody input').map(function() {//TODO:need fix bug
                 return this.checked ? $(this).parents('tr').find('[key]').attr('key') : null;
             }).get();
         },
@@ -485,10 +485,6 @@ var TablePage = function($el, data, config) {
     this.$el = $el;
 
     this.originData = this.pageData = this.data = data;
-
-
-
-
     config = config || {};
 
     this.tHead = config.tHead || []; //表头文字
