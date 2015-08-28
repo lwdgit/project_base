@@ -6,43 +6,30 @@
     - fis3-postpackager-loader 解析 fis3 的 {
     "res": {
         "comp/1-0/1-0.js": {
-            "uri": "/static/comp/1-0/1-0.js",
+            "uri": "/comp/1-0/1-0.js",
             "type": "js",
-            "extras": {
-                "moduleId": "comp/1-0/1-0"
-            },
             "deps": [
-                "static/require.js",
-                "comp/cal/cal.js"
+                "static/require.js"
             ]
         },
         "static/require.js": {
             "uri": "/static/require.js",
             "type": "js"
         },
+        "comp/2-0/2-0.js": {
+            "uri": "/comp/2-0/2-0.js",
+            "type": "js"
+        },
         "comp/cal/cal.js": {
-            "uri": "/static/comp/cal/cal.js",
+            "uri": "/comp/cal/cal.js",
             "type": "js",
-            "extras": {
-                "moduleId": "comp/cal/cal"
-            },
             "deps": [
                 "static/require.js"
             ]
         },
-        "comp/2-0/2-0.js": {
-            "uri": "/static/comp/2-0/2-0.js",
-            "type": "js",
-            "extras": {
-                "moduleId": "comp/2-0/2-0"
-            }
-        },
         "text.js": {
             "uri": "/text.js",
-            "type": "js",
-            "extras": {
-                "moduleId": "text"
-            }
+            "type": "js"
         }
     },
     "pkg": {}

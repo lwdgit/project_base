@@ -1,6 +1,6 @@
 // @require static/require.js
 
-define('comp/cal/cal', ['require', 'exports', 'module'],function (require, exports, module) {
+define(function (require, exports, module) {
     exports.add = function (a, b) {
         return a + b;
     };

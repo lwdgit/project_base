@@ -1,29 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AMD</title>    <!-- <script src="text.js"></script>  -->
+    <title>AMD</title>
+    <script type="text/javascript" src="/static/require.js"></script>
+    <!-- <script src="text.js"></script>  -->
 
 
-
-    
 </head>
 <body>
     <p> Hello, World. </p>
     <button id="btn">load async js</button>
     <div id="ht"></div>
-<script type="text/javascript" src="/static/require.js"></script>
-<script type="text/javascript">/*resourcemap*/
-require.config({paths:{
-  "comp/cal/cal": "/static/comp/cal/cal",
-  "comp/1-0/1-0": "/static/comp/1-0/1-0",
-  "comp/2-0/2-0": "/static/comp/2-0/2-0",
-  "text": "/text"
-}});
-
+    <script type="text/javascript">
         require(['comp/1-0/1-0'], function() {
           var btn = document.getElementById('btn');
           var handler = function() {
-            require(['comp/2-0/2-0']);
+            require(['./comp/2-0/2-0.js']);
             require(['text!/tpl/test.tpl'], function(text) {
               document.querySelector('#ht').innerHTML = text;
             });
