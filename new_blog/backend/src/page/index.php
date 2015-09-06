@@ -33,7 +33,7 @@
             <div class="scroll">
               <div class="scrollContainer">
                 
-                <?php widget("widget/home/home.php",array('title'=>'FIS3 纯php解决方案DEMO')); ?>
+                <?php widget("widget/home/home.php",array('title'=>'FIS3 纯php解决方案DEMO321')); ?>
                 
                 <?php widget("widget/about/about.php"); ?>
                 

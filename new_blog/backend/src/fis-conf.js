@@ -33,3 +33,13 @@ fis.match('*.{html,js,php}', {
   useSameNameRequire: true
 });
 
+/*fis.match('**', {
+  deploy: fis.plugin('local-deliver', {
+    to: 'D:/PHPServer/dist'
+  })
+});
+*/
+fis.extend('ldeploy', {
+  to: 'D:/PHPServer/dist'
+});
+

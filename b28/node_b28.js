@@ -4,6 +4,8 @@ var jsdom = require('jsdom'),
     B = require('./b28lib').b28lib,
     excludeList = ['.svn', 'goform', 'css', 'images', 'lang', 'public', 'lib', 'libs'];
 
+var xlsxWriter = require('./xlsx-write');
+
 var fileList = [],
     langFetchArr = [],
     excludeList = excludeList.join(""),
@@ -59,7 +61,7 @@ function getOptions(optionsArr) {
     };
 }
 
-function unique(inputs) {
+function unique(inputs, type) {
     var res = [];
     var json = {};
     if (!inputs) {
@@ -67,6 +69,9 @@ function unique(inputs) {
     }
     for (var i = 0; i < inputs.length; i++) {
         if (!json[inputs[i]]) {
+            if (type === 1) {
+              inputs[i] = inputs[i].split('\t:\t');
+            }
             res.push(inputs[i]);
             json[inputs[i]] = 1;
         }
@@ -74,8 +79,16 @@ function unique(inputs) {
     return res;
 }
 
+
 function readDict(filename) {
     jsonDict.content = fs.readFileSync(filename, 'utf-8');
+}
+
+function writeExcel(filename, array) {
+  xlsxWriter.write(filename, '', array, {
+    wscols: [{wch:30}, {wch:10}, {wch:10}, {wch:100}]
+  }); 
+  console.log(filename + ' success saved!');
 }
 
 function writeFile(filename, content) {
@@ -84,7 +97,19 @@ function writeFile(filename, content) {
 }
 
 function writeFiles(saveTo) {
-    writeFile(saveTo, unique(langFetchArr).join("\r\n"));
+    if (/\.xlsx$/.test(saveTo)) {
+      writeExcel(saveTo, unique(langFetchArr, 1));
+    } else {
+      writeFile(saveTo, unique(langFetchArr).join("\r\n"));
+    }
+}
+
+function fetchWrite(saveTo, array) {
+    if (/\.xls(x)?$/.test(saveTo)) {
+      writeExcel(saveTo, unique(array, 1));
+    } else {
+      writeFile(saveTo, unique(array).join("\r\n"));
+    }
 }
 
 function correctPath(_path) {
@@ -130,7 +155,7 @@ function _getPageLangData(page, saveTo, callback) {
     var document = jsdom.jsdom(content);
     var arr = new B.getPageData(document.documentElement, CONFIG.onlyZH);
     if (saveTo && saveTo !== "" && typeof saveTo == "string") {
-        writeFile(saveTo, arr.join("\r\n"));
+        fetchWrite(saveTo, arr);
     } else {
         if (typeof saveTo == "function") {
             callback = saveTo;
@@ -148,7 +173,7 @@ function _getResLangData(file, saveTo, callback) {
     var arr = new B.getResData(content, CONFIG.onlyZH);
 
     if (saveTo && saveTo !== "" && typeof saveTo == "string") {
-        writeFile(saveTo, arr.join("\r\n"));
+        fetchWrite(saveTo, arr);
     } else {
         if (typeof saveTo == "function") {
             callback = saveTo;

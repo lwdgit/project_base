@@ -131,7 +131,7 @@ exports.b28lib = function() {
             //translate siblings
             if (nextSibling) {
                 replaceTextNodeValue(nextSibling);
-            }  
+            }
         };
 
     function unique(inputs) { //用哈希表去重
@@ -156,7 +156,7 @@ exports.b28lib = function() {
             key = key.trim();
             if (key !== '' && MSG[key]) {
                 return quote + MSG[key] + quote;
-            }   
+            }
         });
         return content;
     }
@@ -187,15 +187,15 @@ exports.b28lib = function() {
 
             //handle element node
             if (nodeType === 1) {
-            	if (nodeName == 'script' || nodeName == 'style') {
-            		if (nodeName == 'script') {
-            			if (firstChild && firstChild.nodeValue && trim(firstChild.nodeValue)) {
-            				nodeValueArray = nodeValueArray.concat(GetResData(firstChild.nodeValue, onlyZH).reverse());
-            			}
-            		}
-            		firstChild = null;//不再检索script,style的内容
-            	}
-  
+                if (nodeName == 'script' || nodeName == 'style') {
+                    if (nodeName == 'script') {
+                        if (firstChild && firstChild.nodeValue && trim(firstChild.nodeValue)) {
+                            nodeValueArray = nodeValueArray.concat(GetResData(firstChild.nodeValue, onlyZH).reverse());
+                        }
+                    }
+                    firstChild = null; //不再检索script,style的内容
+                }
+
 
                 // Hander elements common attribute need to replace
                 curValue = element.getAttribute("alt");
@@ -218,7 +218,7 @@ exports.b28lib = function() {
                 }
 
                 _getValue(curValue);
-                
+
 
                 //handle textNode
             } else if (nodeType === 3 && /\S/.test(element.nodeValue)) {
@@ -261,15 +261,23 @@ exports.b28lib = function() {
         //console.log(regExp);
         return function(pos) {
             var pre = str.substring(oldpos, pos);
-            oldpos = pos; 
+            oldpos = pos;
             var submatch = pre.match(regExp);
             coderow += submatch ? submatch.length : 0;
             return coderow + 1;
         };
     }
 
+    function addInfo(str, data, pos) {
+        var posToRow = PosToRow(data);
+        return (str + '\t:\t \t:\t 行号:' + posToRow(pos) + '\t:\t' + 
+                data.substring(data.lastIndexOf('\n', pos - 10), data.indexOf('\n', pos + 10))).replace(/[\n\r]/g, '   ');
+                //增加代码摘要，+-10为缓冲范围
+        //console.log(data.lastIndexOf('\n', pos - 10), data.indexOf('\n', pos + 10)
+    }
+
     function filter(keys, key, index) {
- 
+
         return keys.some(function(v) {
             //console.log(index, key, key.lastIndexOf(v));
             if (v === key || key.lastIndexOf(v) === (index - v.length)) return true;
@@ -279,32 +287,35 @@ exports.b28lib = function() {
     function GetResData(data, onlyZH) { //获取js等资源文件内语言
         var regqutoe1 = new RegExp(/\$(\().*?\)/gi),
             regqutoe2 = new RegExp(/((["'])(?:\\.|[^\\\n])*?\2)/g);
-            var ignoreKeyWord = ['$(', 'getElementById(', 'find(', 'indexOf(', 'getElementsByTagName(', 'getElementsByClassName(', 'on('];
-            var matchKeyWord = ['_(', 'showMsg(', 'MSG['];
+        var ignoreKeyWord = ['$(', 'getElementById(', 'find(', 'indexOf(', 'getElementsByTagName(', 'getElementsByClassName(', 'on('];
+        var matchKeyWord = ['_(', 'showMsg(', 'MSG['];
 
         var arr = [];
-        var posToRow = PosToRow(data);
-        data/*.replace(regqutoe1, '')*/.replace(regqutoe2, function(matches) {
+        
+        data /*.replace(regqutoe1, '')*/ .replace(regqutoe2, function(matches) {
             matches = matches.slice(1, matches.length - 1);
-            if (matches.length > 0) {
-            	if (/[\u4e00-\u9fa5]/.test(matches)) {//是否含有中文
-            		arr.push(matches);
-            	} else if(!onlyZH && matches.trim().length > 1 && /[a-z]/i.test(matches)) {
-                    var backLength = arguments[3] >= 25 ? 25 : arguments[3];//计算回溯长度,一般js里的关键字长度不会超过25
-                    
-                    var backStr = data.substr(arguments[3] - backLength, backLength);
-                           
-                    if (filter(matchKeyWord, backStr, backLength) || (matches.indexOf(' ') > -1 || !/^[#\.]|/.test(trim(matches)))) {//回溯查找
-                        arr.push(matches);
-                    } else if (!filter(ignoreKeyWord, backStr, backLength)){
-                        arr.push(matches + '   行号:'  + posToRow(arguments[3]));
+            if (matches.trim().length > 0) {
+                if (/[\u4e00-\u9fa5]/.test(matches)) { //是否含有中文
+                    arr.push(addInfo(matches, data, arguments[3]));
+                } else if (!onlyZH) {
+                    if (matches.trim().length > 1 && /[a-z]/i.test(matches)) {
+                        var backLength = arguments[3] >= 25 ? 25 : arguments[3]; //计算回溯长度,一般js里的关键字长度不会超过25
+
+                        var backStr = data.substr(arguments[3] - backLength, backLength);
+
+                        if (filter(matchKeyWord, backStr, backLength) || (matches.indexOf(' ') > -1 && !/^[#\.]|/.test(trim(matches)))) { //回溯查找
+                            arr.push(addInfo(matches, data, arguments[3]));
+                        } else if (!filter(ignoreKeyWord, backStr, backLength)) {
+                            arr.push(addInfo(matches, data, arguments[3]));
+                        }
                     }
-                }
-                 /*else if (!onlyZH && (trim(matches).indexOf(' ') > -1 && !/^[#\.]/.test(trim(matches)) || /^[A-Z]/.test(matches) && matches.length > 1)) {
+                    /*else if (!onlyZH && (trim(matches).indexOf(' ') > -1 && !/^[#\.]/.test(trim(matches)) || /^[A-Z]/.test(matches) && matches.length > 1)) {
                     //arr.push(matches);
-                }*//* else {
-                    arr.push(matches + '  ' + posToRow(arguments[3]));
                 }*/
+                    /* else {
+                                        arr.push(matches + '  ' + posToRow(arguments[3]));
+                                    }*/
+                }
             }
         });
         return unique(arr);
