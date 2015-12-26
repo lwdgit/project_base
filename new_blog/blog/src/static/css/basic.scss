@@ -1,0 +1,72 @@
+@import 'variable';
+@import 'normalize.css';
+body {
+  background: $background;
+}
+
+input[type="text"], input[type="button"], button, textarea {
+    box-sizing: border-box;
+}
+
+.loadding {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: $background;
+    transition: opacity ease-out 0.8s;
+}
+
+.loadding-field {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -90px;
+    margin-left: -60px;
+    width: 120px;
+    text-align: center;
+    .circle1 {
+        animation: an1 linear 2s infinite;
+        box-shadow: 0 0 2px 2px rgba(99, 99, 99, 0.3);
+    }
+    .circle2 {
+        animation: an2 linear 2s infinite;
+        z-index: 1;
+        border-color: #a0a0a0;
+        box-shadow: inset 0px 0px 2px rgba(200, 200, 200, 0.3);
+    }
+}
+
+.loadding-circle {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    left: 30px;
+    border: 5px solid #cdcdcd;
+    border-radius: 50%;
+}
+.loadding-text {
+    position: absolute;
+    top: 90px;
+    width: 100%;
+    text-align: center;
+}
+
+@keyframes an1 {
+    0%, 99% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes an2 {
+    0%, 99% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.88);
+    }
+}

@@ -1,0 +1,59 @@
+.nav-bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+}
+
+.nav-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #2e333a;
+    z-index: 100;
+    color: #d7d9df;
+    height: 100%;
+    width: 170px;
+    box-shadow: 6px 0 10px rgba(0, 0, 0, 0.3);
+    a {
+        color: #d7d9df;
+    }
+    .avatar-container {
+        height: 120px;
+        border-bottom: #181b1f 1px solid;
+        overflow: hidden;
+    }
+    .avatar {
+        background: #fff url(/static/images/dabai.png) no-repeat;
+        height: 80px;
+        width: 80px;
+        margin: 20px 40px;
+        border-radius: 50%;
+        background-size: cover;
+        border: 3px solid #fff;
+        box-shadow: inset 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
+        transition: transform .3s linear;
+        &:hover {
+            transform: rotate(30deg);
+        }
+    }
+    ul {
+        border-bottom: #434a54 1px solid;
+    }
+    li {
+        border-top: #434a54 1px solid;
+        border-bottom: #181b1f 1px solid;
+        padding: 15px 30px;
+        cursor: pointer;
+    }
+    .icon-font {
+        margin-right: 10px;
+    }
+    .copyright {
+        color: #090909;
+        text-shadow: 0 1px 0 #757575;
+        text-align: center;
+        padding: 20px 0;
+        line-height: 2em;
+    }
+}

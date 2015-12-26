@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>rsa</title>
+    <script language="JavaScript" src="../static/js/libs/rsa/BigInt.js"></script>
+    <script language="JavaScript" src="../static/js/libs/rsa/Barrett.js"></script>
+    <script language="JavaScript" src="../static/js/libs/rsa/RSA_Stripped.js"></script>
+</head>
+
+<body>
+    <form action="en.php" method="POST" onsubmit="return sub(this)">
+        <input type="hidden" name="password">
+        <input type="text" name="test">
+        <input type="submit" value="ok">
+    </form>
+    <script>
+    function encrypt(content) {
+        var rsa_n = "AC7F0922D504A5A6521BFA77EA1F634D253CC9230DAF5D2A6C1585477FBA3DE764194630421511C7DB2BB307887B4F276DA47543B611421E44136CF1B8FC8E1E2A8EBD2D908E92187E81CC460DA45287BB4D6C68BCE0D60D6E6B561C61756C948233AE95DB202A3AB13C150472DBBD8CA4F227997D4E83EB72DC63C9ACF94EFF";
+        setMaxDigits(131); //131 => n的十六进制位数/2+3 
+        var key = new RSAKeyPair("10001", '', rsa_n); //10001 => e的十六进制 
+        content_rsa = encryptedString(key, content); //不支持汉字 
+        return content_rsa;
+    }
+
+    function sub(f) {
+        var content = encrypt(f.test.value);
+        console.log(content);
+        f.password.value = content;
+        return true;
+    }
+    </script>
+</body>
+
+</html>

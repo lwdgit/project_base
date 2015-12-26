@@ -1,0 +1,34 @@
+.shift-button {
+    position: relative;
+    width: 46px;
+    height: 20px;
+    display: inline-block;
+    cursor: pointer;
+    input[type="checkbox"] {
+        display: none;
+    }
+    .button {
+        width: 100%;
+        height: 100%;
+        border-radius: 30px;
+        background: #ddd;
+        position: relative;
+        border: 1px solid #9d9d9d;
+    }
+    .button .circle {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        box-shadow: 1px 1px 1px 1px #555;
+        background: #fff;
+        left: 0;
+        position: absolute;
+    }
+    input:checked ~ .button {
+        background: #5555FF;
+    }
+    input:checked ~ .button .circle {
+        right: 0;
+        left: auto;
+    }
+}

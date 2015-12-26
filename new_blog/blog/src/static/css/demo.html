@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>icon-font</title>
+		<link rel="stylesheet" href="fonts.css">
+		<style>
+			
+			#fontList li {
+				list-style: none;
+				cursor: pointer;
+			}
+
+			.none {
+				display: none;
+			}
+
+			textarea {
+				resize: none;
+				width: 600px;
+				height: 50px;
+				border: none;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>icon-font</h1>
+		<ul id="fontList">
+			
+			<li>
+				<i class="icon-font icon-about" title="\e001;">  .icon-about</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-arrow" title="\e002;">  .icon-arrow</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-back" title="\e003;">  .icon-back</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-clear" title="\e004;">  .icon-clear</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-fresh" title="\e005;">  .icon-fresh</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-home" title="\e006;">  .icon-home</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-list" title="\e007;">  .icon-list</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-more" title="\e008;">  .icon-more</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-search" title="\e009;">  .icon-search</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-setting" title="\e00a;">  .icon-setting</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-tag" title="\e00b;">  .icon-tag</i>   
+			</li>
+			
+			<li>
+				<i class="icon-font icon-write" title="\e00c;">  .icon-write</i>   
+			</li>
+			
+		</ul>
+
+		<hr>
+		<h1>Usage:</h1>
+		<div class="showUsage">
+			<textarea id="first"></textarea>
+			<br>or:
+			<br><br>
+			<textarea id="second"></textarea>
+		</div>
+		<script>
+
+		function onEvent(el, type, fn) {
+			if (window.addEventListener) {
+				el.addEventListener(type, function(e) {
+					fn.call(this, e.target);
+				}, false);
+			} else if (window.attachEvent) {
+				el.attachEvent('on' + type, function(e) {
+					e = e || window.event;
+					fn.call(this, e.srcElement);
+				});
+			}
+		}
+
+		onEvent(document.getElementById('fontList'), 'click', function(e) {
+			if (e.tagName !== 'I')return;
+			document.getElementById('first').value = '<i class="' + e.className + '"></i>';
+			document.getElementById('second').value = '<i class="' + e.className.match(/[^ ]*/g)[0] + '">' + e.getAttribute('title').replace('\\', '&#x') + '</i>';
+		});
+		document.getElementsByTagName('i')[0].click();
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+.write-container {
+
+    input[type="text"], textarea {
+        width: 100%;
+        border: 1px solid #ddd;
+        display: block;
+    }
+    input[type="text"] {
+        line-height: 30px;
+        padding: 2px 5px;
+    }
+    textarea {
+        min-height: 250px;
+        resize: vertical;
+    }
+    .operate {
+        display: flex;
+        input {
+            flex: 1;
+            line-height: 35px;
+            border: 1px solid #36F;
+        }
+        input[type="submit"] {
+            background: #55f;
+            color: #fff;
+        }
+    }
+}

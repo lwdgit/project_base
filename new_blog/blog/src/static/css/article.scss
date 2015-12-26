@@ -1,0 +1,58 @@
+article {
+    .content {
+        word-wrap: break-word;
+        font-family: "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif !important;
+        line-height: 1.7;
+        padding: 12px;
+    }
+    pre,
+    pre code {
+        display: block;
+        padding: 0.5em;
+        background: #002b36;
+        color: #CCCCCC;
+        font-family: Menlo, Monaco, "Andale Mono", "lucida console", "Courier New", monospace;
+    }
+    pre code {
+        border: none;
+    }
+    code {
+        padding: 1px 3px;
+        margin: 0 3px;
+        background: #FDFDFD;
+        border: 1px solid #ECECEC;
+    }
+    p {
+        margin: 0 0 1em;
+    }
+    blockquote {
+        border-left: 5px solid #eee;
+        margin: 20px;
+        padding: 5px 10px;
+        clear: both;
+        margin-left: 10px;
+    }
+    blockquote p {
+        margin-bottom: 0px;
+    }
+    div {
+        margin-bottom: 1.2em;
+    }
+    .preview {
+        width: 900px;
+        margin: 20px auto;
+        background-color: #F3F2EE;
+    }
+    .preview blockquote {
+        border-left-color: #e0e0e0;
+    }
+    table {
+        border-spacing: 0;
+        border-collapse: collapse; //边框合并
+    }
+    td,
+    th {
+        border: 1px solid #777;
+        padding: 10px;
+    }
+}

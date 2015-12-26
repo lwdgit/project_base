@@ -1,0 +1,40 @@
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    //border: 1px solid #CCC!important;
+    height: 27px!important;
+    line-height: 27px!important;
+    border-radius: 0 4px 4px 0;
+}
+
+#login {
+    input {
+        box-sizing: border-box;
+        outline: none;
+    }
+    input[type="text"],
+    input[type="password"] {
+        border: none;
+        font-size: 1.5em;
+        line-height: 1;
+        width: 100%;
+    }
+    .tip {
+        position: absolute;
+        line-height: 1;
+    }
+    .checkpic {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        width: 60px;
+    }
+    .btn {
+        border: 1px solid #36F;
+        padding: 10px;
+        width: 100%;
+    }
+    .btn-primary {
+        background: #55f;
+        color: #fff;
+    }
+}

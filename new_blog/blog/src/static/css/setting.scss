@@ -1,0 +1,47 @@
+fieldset {
+    margin: 10px;
+    //border: 3px solid #ddd;
+    padding: 0;
+    &.plain {
+        border: none;
+    }
+}
+
+.control-group {
+    position: relative; 
+    border-top: 1px solid #ddd;  
+    padding: 10px; 
+}
+
+.control-label {
+    float: left;
+    width: 120px;
+}
+
+.controls {
+    padding-left: 120px;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: right;
+}
+
+.btn-group {
+    display: flex;
+    button {
+        flex: 1;
+        line-height: 30px;
+        &.primary {
+            background: #55f;
+            color: #fff;
+        }
+        &.btn {
+            border: 1px solid #36F;
+        }
+    }
+}
+
+.controls-text {
+
+}
+
+

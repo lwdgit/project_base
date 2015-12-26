@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录</title>
+    <link rel="stylesheet" href="../static/css/basic.scss">
+    <link rel="stylesheet" href="../static/css/theme.scss">
+</head>
+
+<body>
+    <header id="header">
+        <div class="header">
+            <button class="back icon-font icon-back" onclick="history.back();"></button>
+            <div>登 录</div>
+        </div>
+    </header>
+    <form action="logIn.php" method="POST" onsubmit="return onSubmit(this)" id="login">
+        <div class="control-group">
+            <input type="text" name="name" placeholder="帐号" maxlength="10">
+        </div>
+        <div class="control-group">
+            <input type="password" id="password_show" placeholder="密码" autocomplete="off" maxlength="10">
+            <input type="hidden" name="password">
+        </div>
+        <div class="control-group">
+            <input type="text" name="verification" placeholder="验证码" maxlength="4">
+            <img class="checkpic" src='../Auth/checkCode.php' />
+        </div>
+        <div class="btn-group">
+            <input class="btn btn-primary" type="submit" value="登 录">
+        </div>
+    </form>
+    <script>
+    function encrypt(content) {
+        var rsa = "AC7F0922D504A5A6521BFA77EA1F634D253CC9230DAF5D2A6C1585477FBA3DE764194630421511C7DB2BB307887B4F276DA47543B611421E44136CF1B8FC8E1E2A8EBD2D908E92187E81CC460DA45287BB4D6C68BCE0D60D6E6B561C61756C948233AE95DB202A3AB13C150472DBBD8CA4F227997D4E83EB72DC63C9ACF94EFF";
+        setMaxDigits(131); // n 129+3
+        var key = new RSAKeyPair("10001", '', rsa); //e
+        content_rsa = encryptedString(key, content);
+        return content_rsa;
+    }
+
+    function onSubmit(f) {
+        var encryptPwd = encrypt(document.getElementById('password_show').value);
+        f.password.value = encryptPwd;
+        return true;
+    }
+    </script>
+    <script src="/static/js/libs/rsa/BigInt.js"></script>
+    <script src="/static/js/libs/rsa/Barrett.js"></script>
+    <script src="/static/js/libs/rsa/RSA_Stripped.js"></script>
+</body>
+
+</html>
