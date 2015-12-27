@@ -1,3 +1,4 @@
+fis.config.set('project.ignore', ['tpl/index.tmpl']);
 reasy
     .extend('parse')
     .hook('amd', {
@@ -63,7 +64,7 @@ reasy
     .extend('autoprefix')
 
     .extend('ldeploy', {
-        to: 'D:/PHPServer/nBlog'
+        to: '/Users/lw/workspace/me/svn/6'
     })
 
     fis.media('prod')

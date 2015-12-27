@@ -62,9 +62,9 @@ function authorize() {
 }
 
 function makeData($obj) {
-    if (!authorize()) {
+    /*if (!authorize()) {
         return 'Access Not Authorize!!!';
-    }
+    }*/
 
     $callback = safeGet('callback');
     
