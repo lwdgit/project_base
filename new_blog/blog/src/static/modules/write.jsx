@@ -15,10 +15,12 @@ var Write = React.createClass({
         return {};
     },
     componentDidMount: function(e) {
-        window.onbeforeunload = window.onunload = function() {
+        var autoSave = function() {
             var article = this.collectValue();
             localStorage.setItem('__tempArticle', JSON.stringify(article));
         }.bind(this);
+        window.onbeforeunload = window.onunload = autoSave;
+        setInterval(autoSave, 6000);
     },
     componentWillUnmount: function(e) {
         window.onbeforeunload = window.onunload = null;

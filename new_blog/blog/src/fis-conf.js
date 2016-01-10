@@ -1,4 +1,4 @@
-fis.config.set('project.ignore', ['tpl/index.tmpl']);
+fis.config.set('project.ignore', []);
 reasy
     .extend('parse')
     .hook('amd', {
@@ -17,7 +17,8 @@ reasy
         },
         forwardDeclaration: false
     })
-    .match('static/modules/**.{js,jsx}', {
+    .match('(static/modules/**).{js,jsx}', {
+        moduleId: '$1',
         isMod: true
     })
     .match('static/js/*.js', {
@@ -49,7 +50,9 @@ reasy
     .match('/static/modules/**.{js,jsx}', {
         packTo: 'static/modules.js'
     })
-    .extend('pack')
+    .extend('pack', {
+        useInlineMap: false
+    })
 
 
     .match('**.scss', {
@@ -67,7 +70,7 @@ reasy
         to: '/Users/lw/workspace/me/svn/6'
     })
 
-    fis.media('prod')
+    //fis.media('prod')
     .extend('compress')
 
 
