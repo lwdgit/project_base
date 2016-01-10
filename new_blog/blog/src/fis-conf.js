@@ -30,7 +30,8 @@ reasy
             openTag: '<%',
             closeTag: '%>'
         }),
-        isHtmlLike: true
+        loaderLang: true,
+        isHtmlLike: false
     })
     .extend('iconfont', {
         fonts: 'static/fonts-svg/**.svg',
