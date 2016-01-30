@@ -40,11 +40,11 @@ var Ajax = {
             var ret = [];
             for(var prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
-                    ret.push(prop + '=' + encodeURI(obj[prop]));
+                    ret.push(encodeURIComponent(prop) + '=' + encodeURIComponent(obj[prop]));
                 }
             }
             ret = ret.join('&');
-            ret = ret.replace(/\s/g, '+');
+            ret = ret.replace(/%20/g, '+');
             return ret;
         } else {
             return '';
