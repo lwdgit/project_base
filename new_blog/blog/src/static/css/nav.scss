@@ -43,8 +43,11 @@
     li {
         border-top: #434a54 1px solid;
         border-bottom: #181b1f 1px solid;
-        padding: 15px 30px;
         cursor: pointer;
+        > * {
+            display: block;
+            padding: 15px 30px;
+        }
     }
     .icon-font {
         margin-right: 10px;

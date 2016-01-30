@@ -30,7 +30,7 @@ var Nav = React.createClass({
                         <li><a href="/"><i className="icon-font icon-home"></i>首　　页</a></li>
                         <li><a href="/?write"><i className="icon-font icon-write"></i>写点什么</a></li>
                         <li><a href="/?about"><i className="icon-font icon-about"></i>关　　于</a></li>
-                        <li onClick={this.clearCache}><i className="icon-font icon-clear"></i>清除缓存</li>
+                        <li onClick={this.clearCache}><span><i className="icon-font icon-clear"></i>清除缓存</span></li>
                         <li><a href="/?setting"><i className="icon-font icon-setting"></i>设　　置</a></li>
                     </ul>
                     <div className="copyright">
