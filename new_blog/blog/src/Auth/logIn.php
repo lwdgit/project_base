@@ -3,7 +3,7 @@ include('../data/core/db.php');
 include('../library/function.php');
 include('crypt.php');
 
-define("LIFETIME", 24 * 3600);//设置session超时时间为1天
+define("LIFETIME", 30 * 24 * 3600);//设置session超时时间为30天
 session_set_cookie_params(LIFETIME);//设置超时时间
 
 session_start();
