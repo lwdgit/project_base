@@ -17,6 +17,9 @@ var Write = React.createClass({
     componentDidMount: function(e) {
         var autoSave = function() {
             var article = this.collectValue();
+            if (!article.title && !article.content && article.id) {
+                delete article.id;
+            }
             localStorage.setItem('__tempArticle', JSON.stringify(article));
         }.bind(this);
         window.onbeforeunload = window.onunload = autoSave;
