@@ -25,8 +25,8 @@ function initPath(path, isBack) {
 
 function init() {
     require(['../js/router', 'page', 'nav', 'widget', 'header', 'footer'], function(router, page, nav, widget, header, footer) {
-        document.getElementById('main').style.visibility = '';
         util.showLoadding(false);
+        document.getElementById('main').style.visibility='visible';
         window.App = window.App || {
             Instance: {}
         };
@@ -36,12 +36,6 @@ function init() {
         initPath(window.location.pathname + window.location.search);
         router.init(initPath);
     });
-    /*window.onbeforeunload = window.onunload = function() {
-        //console.log(arguments);
-        //if (!navigator.onLine && window.location.host !== '127.0.0.1') {
-        //return '你当前处于离线状态，刷新后页面缓存可能会失效，';
-        //}
-    }*/
 }
 
 if (window.applicationCache) {

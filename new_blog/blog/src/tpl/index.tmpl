@@ -39,7 +39,11 @@
     <script type="text/javascript">
         -[1,]&&init();
         function init() {
-            document.getElementById('loadding').style.display = '';
+            if (navigator.onLine) {
+                document.getElementById('loadding').style.display = '';
+                document.getElementById('main').style.visibility='visible'; 
+            }
+            
             require(['static/js/index','static/js/util'], function(index, util) {
                 util.Ajax.loadStyle('/static/css/theme.css');
                 index.init();
@@ -47,5 +51,4 @@
         }
     </script>
 </body>
-
 </html>

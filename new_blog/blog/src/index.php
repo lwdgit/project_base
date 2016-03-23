@@ -26,12 +26,14 @@ render('tpl/index.tmpl', array(
     '/\{\{content\}\}/',
     '/\{\{site_name\}\}/m', 
     '/\{\{title\}\}/m',
-    '/\{\{catagory\}\}/'
+    '/\{\{catagory\}\}/',
+    '/[\r\n]/'
     ), array(
     $htmlStr,
     $SITE_NAME,
     "文章列表 -- " . $SITE_NAME,
-    "文章列表"
+    "文章列表",
+    ""
     )
 );
 ?>

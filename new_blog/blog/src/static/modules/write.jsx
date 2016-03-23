@@ -23,7 +23,7 @@ var Write = React.createClass({
             localStorage.setItem('__tempArticle', JSON.stringify(article));
         }.bind(this);
         window.onbeforeunload = window.onunload = autoSave;
-        setInterval(autoSave, 6000);
+        document.addEventListener('visibilitychange', autoSave.bind(this));
     },
     componentWillUnmount: function(e) {
         window.onbeforeunload = window.onunload = null;

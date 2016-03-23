@@ -61,7 +61,11 @@ var Header = React.createClass({
         return {titleId: 'list', title: document.title.slice(0, -18)};
     },
     back: function() {
-        history.back();
+        if (history.state) {
+            history.back();
+        } else {
+            location.replace('//' + location.host);
+        }
     },
     showNav: function() {
         window.App.Instance.nav.toggleDisplay();

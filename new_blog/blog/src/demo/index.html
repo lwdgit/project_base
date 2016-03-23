@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>简易代码执行器</title>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+        .btn-group {
+            display: table;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-group button {
+            display: table-cell;
+            width: 50%;
+            height: 30px;
+        }
+        textarea.code {
+            width: 100%;
+            min-height: 300px;
+            box-sizing: border-box;
+        }
+        #__msglog {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <form action="#run">
+        <textarea class="code" id="demoCode" name="" rows="10"></textarea>
+        <div id="settings">
+            <div class="btn-group">
+                <button id="run">执行</button>
+                <button id="clear">清空</button>
+            </div> 
+            <label><input id="runOnCurTab" type="checkbox" checked>在当前页执行</label>
+            <label><input id="runOnLoad" type="checkbox">在页面初始化时执行</label>
+        </div>
+    </form>
+    <script>
+        document.getElementById('run').addEventListener('click', function(ev) {
+            ev.preventDefault();
+            try {
+                var code = document.querySelector('#demoCode').value;
+                localStorage.setItem('demoCode', code);
+                if (document.querySelector('#runOnCurTab').checked) {
+                    runCode(code);
+                } else if (document.querySelector('#runOnLoad').checked) {
+                    runCode(code);
+                }
+            } catch (ex) {
+                __log(ex.stack || ex);        
+                //alert('Your browser doesn\'t support localStorage');
+            } finally {
+                location.hash = '#run';
+            }
+        }, false);
+
+        document.getElementById('clear').addEventListener('click', function() {
+            document.querySelector('#demoCode').value = '';
+        }, false);
+       
+        window.onload = function() {
+            if (location.hash === '#run' && __settings['runOnLoad']) {
+                var code;
+                try {
+                    if (code = localStorage.getItem('demoCode')) {
+                    runCode(code, {});
+                    }
+                } catch (ex) {}
+            }
+        };
+        
+        function event() {
+            //document.querySelectorAll('input[type="checkbox"]')
+            var settingsEl = document.querySelector('#settings');
+                [].forEach.call(settingsEl.querySelectorAll('input'), function(el, index) {
+                    el.checked = !!__settings[el.id];
+                });
+                settingsEl.addEventListener('click', function(ev) {
+                var el;
+                if ((el = ev.srcElement).tagName === 'INPUT') {
+                    __settings[el.id] = el.checked;     
+                    saveSettings();
+                }
+            }, false);
+        }
+        
+        function saveSettings() {
+            try {
+                localStorage.setItem('demoCodeSetting', JSON.stringify(window.__settings) || '{"runOnCurTab": true}');
+            } catch (ex) {}
+        }
+
+        (function initSetting() {
+            var __settings = {};            
+            try {
+                __settings = JSON.parse(localStorage.getItem('demoCodeSetting') || '{"runOnCurTab": true}');
+                document.querySelector('#demoCode').value = localStorage.getItem('demoCode');
+            } catch (ex) {}
+            finally {
+                window.__settings = __settings;
+            }
+        }(), event());
+
+        function runCode(code, settings) {
+            settings = settings || __settings;
+            if (code) {
+                code = code.replace(/console.log/g, '__log');
+                if (settings.runOnLoad) {
+                    runInNewWindow(code);
+                } else {
+                    __log(eval(code));
+                }
+            } else {
+                __log('please input code');
+            }
+        }
+
+        function runInNewWindow(code, all) {
+            var w = window.open('', '_blank', '');
+            var d = w.document;
+            if (all && code) {
+                d.write(code.replace(/<!doctype.*?>/i, ''));
+            } else {
+                d.write('<html><head><title>代码运行中</title></head><body><script>' + __log.toString() + ';\r\n' +  code + '<\/script></body></html>');
+            }
+            d.close();
+        }
+        
+        function __log(msg) {
+            var el;
+            if (!(el = document.getElementById('__msglog'))) {
+                var layer = document.createElement('div'),
+                el = document.createElement('div');
+                layer.style.cssText = "height: 100px";
+                el.id = '__msglog';
+                el.style.cssText = 'position: fixed;z-index: 9999999999;width:100%;bottom:0;height:90px;background: #dd8;overflow:scroll;padding:5px';
+                layer.appendChild(el);
+                document.getElementsByTagName('body')[0].appendChild(layer);
+            }
+            if (msg) {
+                var type = Object.prototype.toString.call(msg);
+                switch(type) {
+                    case '[object Array]':
+                    case '[object Object]': msg = JSON.stringify(msg, null, 0);break;
+                    case '[object Function]': msg = msg.toString();break;
+                    default: ;
+                }
+            }
+            el.innerHTML = ['<div style="border-bottom:1px dotted">' + msg + '</div>', el.innerHTML].join('');
+            el.scrollTop = 0;
+        }
+    </script>
+</body>
+</html>

@@ -8,7 +8,7 @@ reasy
             'libs': '../js/libs',
             'index': '../js/index',
             'router': '../js/router',
-            'react': '../js/libs/react'
+            'react': '../js/libs/react14'
         },
         shim: {
             'react': {

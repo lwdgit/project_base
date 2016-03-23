@@ -33,7 +33,7 @@ var Ajax = {
                     callback(null, req);
                 }
             }
-        }
+        };
     },
     param: function(obj) {
         if (Object.prototype.toString.call(obj) === '[object Object]') {
@@ -86,7 +86,7 @@ var Ajax = {
             //console.log(response);
             document.getElementsByTagName('head')[0].removeChild(sc);
             delete window[cb];
-        }
+        };
         if (url.indexOf('?') === -1) {
             url += '?';
         }
@@ -104,7 +104,7 @@ var Ajax = {
         sc.onerror = function() {
             window[cb](null);
             sc.onerror = null;
-        }
+        };
         document.getElementsByTagName('head')[0].appendChild(sc);
     },
     localLoad: function(url, data, callback, conf) {
@@ -123,7 +123,7 @@ var Ajax = {
                     data = localStorage.getItem(url); //如果未取得数据，则从本地读取
                 }
                 return callback(data, req);
-            }
+            };
             this.jsonp(url, data, _callback, 'json');
         }
     },

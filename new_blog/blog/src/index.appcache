@@ -5,7 +5,7 @@ CACHE:
 /favicon.ico
 /article.php
 /static/js/libs/require.js
-/static/js/libs/react.js
+/static/js/libs/react14.js
 /static/js/libs/showdown.min.js
 /static/js/libs/page.js
 /static/js/main.js
