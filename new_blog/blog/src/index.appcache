@@ -21,4 +21,6 @@ CACHE:
 /pkg/tpl/index.tmpl_map.js
 
 NETWORK:
+http://*
+https://*
 *
